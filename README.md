@@ -24,7 +24,6 @@ Framework preset: **None** · Build command: **vazio** · Build output directory
 - Contagem decrescente para o Natal, mensagem de boas-vindas por pessoa, neve e música de Natal opcional (botão no canto, começa desligada).
 - Filtro e ordenação por preço; separador "As minhas reservas".
 - Confirmação antes de reservar, desfazer, guardar, adicionar ou apagar.
-- Prendas com várias unidades (campo "Quantidade" no editor): cada pessoa reserva uma.
 - Fotos das prendas em `public/img/`. A lista da Natália veio do PDF "Carta ao Pai Natal".
 
 ## Privacidade

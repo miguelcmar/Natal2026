@@ -81,10 +81,7 @@ button:disabled{opacity:.5}
       </div>
     </div>
     <label for="note">Nota (tamanho, cor...)</label>
-    <input id="note">
-    <label for="qty">Quantidade (quantas unidades podem ser compradas)</label>
-    <input id="qty" type="number" min="1" max="20" value="1" inputmode="numeric">
-    <div class="msg" id="saveMsg"></div>
+    <input id="note">    <div class="msg" id="saveMsg"></div>
     <div class="row" style="margin-top:8px">
       <button id="saveBtn" type="button">Guardar prenda</button>
       <button class="ghost" id="cancelBtn" type="button" style="flex:0 0 auto">limpar</button>
@@ -166,7 +163,7 @@ async function loadItems() {
   $('list').innerHTML = items.length ? items.map(i => `
     <div class="item">
       ${i.image_url ? `<img src="${esc(i.image_url)}" alt="" referrerpolicy="no-referrer">` : '<div class="ph">🎁</div>'}
-      <div class="t"><b>${esc(i.title)}</b><span>${esc(i.price || '')}${i.quantity > 1 ? ' · ' + i.quantity + ' unidades' : ''}</span></div>
+      <div class="t"><b>${esc(i.title)}</b><span>${esc(i.price || '')}</span></div>
       <button class="ghost" data-edit="${i.id}">editar</button>
       <button class="ghost" data-del="${i.id}">apagar</button>
     </div>`).join('') : '<p style="color:var(--muted)">Ainda sem prendas.</p>';
@@ -179,7 +176,7 @@ $('list').addEventListener('click', async e => {
     editingId = i.id;
     $('formTitle').textContent = 'Editar prenda';
     $('link').value = i.url || ''; $('title').value = i.title || ''; $('image').value = i.image_url || '';
-    $('price').value = i.price || ''; $('note').value = i.note || ''; $('priority').value = i.priority; $('qty').value = i.quantity || 1;
+    $('price').value = i.price || ''; $('note').value = i.note || ''; $('priority').value = i.priority;
     showPrev(); window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   if (del && await ask('Apagar esta prenda?', 'Esta ação não pode ser desfeita.', 'Apagar')) {
@@ -198,7 +195,7 @@ function clearForm() {
   editingId = null;
   $('formTitle').textContent = 'Nova prenda';
   for (const id of ['link', 'title', 'image', 'price', 'note']) $(id).value = '';
-  $('priority').value = '0'; $('qty').value = '1'; showPrev(); say('readMsg', ''); say('saveMsg', '');
+  $('priority').value = '0'; showPrev(); say('readMsg', ''); say('saveMsg', '');
 }
 $('cancelBtn').onclick = clearForm;
 
@@ -266,8 +263,7 @@ $('saveBtn').onclick = async () => {
   try {
     await rpc('admin_save', {
       p_token: token, p_id: editingId, p_title: title, p_url: $('link').value, p_image: $('image').value,
-      p_price: $('price').value, p_note: $('note').value, p_priority: parseInt($('priority').value, 10),
-      p_quantity: Math.max(1, Math.min(20, parseInt($('qty').value, 10) || 1))
+      p_price: $('price').value, p_note: $('note').value, p_priority: parseInt($('priority').value, 10), p_quantity: 1
     });
     clearForm(); say('saveMsg', 'Guardado ✓', 'ok'); loadItems();
   } catch { say('saveMsg', 'Erro ao guardar.', 'err'); }

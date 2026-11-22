@@ -351,19 +351,14 @@ async function load(silent = false) {
 function card(it) {
   const link = safeUrl(it.url);
   const img = safeUrl(it.image_url);
-  const q = it.quantity || 1;
   let status = '', action = '';
-  if (it.own) {
-    if (q > 1) status = `<div class="small">Quantidade: ${q}</div>`;
-  } else if (it.mine) {
-    status = `<div class="reserved">Reservado por ti ✓</div>`
-      + (q > 1 ? `<div class="small">${it.taken} de ${q} reservadas</div>` : '');
+  if (it.mine) {
+    status = `<div class="reserved">Reservado por ti ✓</div>`;
     action = `<div class="row"><button class="ghost" data-undo="${it.id}">desfazer reserva</button></div>`;
   } else if (it.reserved) {
-    status = `<div class="reserved">${q > 1 ? 'Todas reservadas ✓' : 'Reservado ✓'}</div>`;
-  } else {
-    if (q > 1) status = `<div class="small">${it.taken} de ${q} já reservadas</div>`;
-    action = `<button data-reserve="${it.id}">${q > 1 ? 'Reservar uma' : 'Reservar'}</button>`;
+    status = `<div class="reserved">Reservado ✓</div>`;
+  } else if (!it.own) {
+    action = `<button data-reserve="${it.id}">Reservar</button>`;
   }
   const done = !it.own && !it.mine && it.reserved;
   const stamp = !it.own && (it.reserved || it.mine) ? `<span class="stamp ${it.mine ? 'mine' : ''}">Reservado</span>` : '';
