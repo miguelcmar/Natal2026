@@ -20,7 +20,15 @@ Framework preset: **None** · Build command: **vazio** · Build output directory
 - Se alguém escolher o nome errado: abrir o endereço com `?reset` no fim (ex.: `https://NOME.pages.dev/?reset`).
 - Miguel e Natália: ao escolherem o seu nome aparece "✎ Editar a minha carta".
 
+## Funcionalidades
+- Contagem decrescente para o Natal, mensagem de boas-vindas por pessoa, neve e música de Natal opcional (botão no canto, começa desligada).
+- Filtro e ordenação por preço; separador "As minhas reservas" com "Já comprei".
+- Confirmação antes de reservar, desfazer, guardar, adicionar ou apagar.
+- Prendas com várias unidades (campo "Quantidade" no editor): cada pessoa reserva uma.
+- Fotos das prendas em `public/img/`. A lista da Natália veio do PDF "Carta ao Pai Natal".
+
 ## Privacidade
+- A base de dados guarda quem reservou (só para "As minhas reservas" e para só essa pessoa poder desfazer); o site nunca o mostra a mais ninguém.
 - A base de dados nem envia as reservas da própria lista de quem escolheu "Miguel" ou "Natália".
 - É um sistema de confiança: quem escolher o nome de outra pessoa vê o que essa pessoa veria.
 - Quem escolher "Miguel" ou "Natália" também pode editar essa carta (sem passwords, é um sistema de confiança).
