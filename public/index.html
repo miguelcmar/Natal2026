@@ -209,7 +209,7 @@ const WELCOME = {
     'Missão de Natal para o casal mais esperto da família: escolher uma prenda, reservar e fingir surpresa no dia 25. 🎁' ] },
   'cotas': { name: 'Cotas', msgs: [
     'Os duendes avisaram que os cotas são os melhores a escolher prendas. Sem pressão, mas a fasquia está altíssima! 😄',
-    'Aqui ninguém precisa de embrulhar já. Escolham a prenda, carreguem em «Vou comprar este» e o Pai Natal trata do resto.',
+    'Aqui ninguém precisa de embrulhar já. Escolham a prenda, carreguem em «Reservar» e o Pai Natal trata do resto.',
     'O Pai Natal está a contar convosco. Até mandou um email, mas foi parar ao spam. Por isso, venham ver as cartas! 📬' ] },
   'marta-nuno': { name: 'Marta e Nuno', msgs: [
     'O Pai Natal já tem as vossas caras no ficheiro dos «muito simpáticos». Aproveitem: escolham uma prenda e reservem.',
@@ -363,7 +363,7 @@ function card(it) {
     status = `<div class="reserved">${q > 1 ? 'Todas reservadas ✓' : 'Reservado ✓'}</div>`;
   } else {
     if (q > 1) status = `<div class="small">${it.taken} de ${q} já reservadas</div>`;
-    action = `<button data-reserve="${it.id}">${q > 1 ? 'Reservar uma' : 'Vou comprar este'}</button>`;
+    action = `<button data-reserve="${it.id}">${q > 1 ? 'Reservar uma' : 'Reservar'}</button>`;
   }
   const done = !it.own && !it.mine && it.reserved;
   const stamp = !it.own && (it.reserved || it.mine) ? `<span class="stamp ${it.mine ? 'mine' : ''}">Reservado</span>` : '';
