@@ -17,7 +17,7 @@ header h1{margin:0;font-size:1.3rem}
 main{max-width:760px;margin:0 auto;padding:16px}
 .box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:16px 0}
 label{display:block;font-size:.85rem;color:var(--muted);margin:10px 0 4px}
-input,select{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;font:inherit;background:#fff}
+input,select,textarea{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;font:inherit;background:#fff}
 button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:10px 14px;background:var(--red);color:#fff;font-weight:600}
 button.sec{background:var(--green)}
 button.ghost{background:transparent;color:var(--muted);font-weight:400;text-decoration:underline;padding:4px}
@@ -77,7 +77,8 @@ button:disabled{opacity:.5}
     <input id="image" type="url" inputmode="url">
     <img id="prev" class="preview hidden" alt="">
     <label for="note">Nota (tamanho, cor...)</label>
-    <input id="note">    <div class="msg" id="saveMsg"></div>
+    <textarea id="note" rows="3"></textarea>
+    <div class="msg" id="saveMsg"></div>
     <div class="row" style="margin-top:8px">
       <button id="saveBtn" type="button">Guardar prenda</button>
       <button class="ghost" id="cancelBtn" type="button" style="flex:0 0 auto">limpar</button>
