@@ -148,10 +148,6 @@ h2.list-title::after{content:"";display:block;width:36px;height:1px;background:v
 .toast{position:fixed;left:50%;bottom:76px;transform:translateX(-50%);z-index:90;max-width:min(420px,calc(100vw - 32px));background:var(--cream);color:var(--ink);border-radius:14px;padding:12px 16px;box-shadow:0 12px 40px rgba(0,0,0,.4);font-size:.92rem;text-align:center}
 .toast[hidden]{display:none}
 
-/* musica */
-.music{position:fixed;right:16px;bottom:16px;z-index:60;background:rgba(14,42,33,.85);color:var(--cream);border:1px solid rgba(217,183,121,.5);padding:10px 16px;font-weight:500;font-size:.9rem;backdrop-filter:blur(4px)}
-.music:hover{background:rgba(20,58,45,.95)}
-.music.on{background:var(--gold);color:#2b2316;border-color:var(--gold)}
 
 @media (prefers-reduced-motion: reduce){ button{transition:none} }
 </style>
@@ -198,7 +194,6 @@ h2.list-title::after{content:"";display:block;width:36px;height:1px;background:v
 </header>
 <main id="app"></main>
 
-<button class="music" id="music" type="button" aria-pressed="false" title="Ligar ou desligar a música de Natal">🎵 Música</button>
 <div class="toast" id="toast" hidden></div>
 
 <div id="modal" class="modal" hidden>
@@ -477,70 +472,6 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden && vi
 setInterval(() => { if (!document.hidden && viewer && state && $('modal').hidden) load(true); }, 30000);
 
 if (viewer) load(); else renderPicker();
-
-/* ---------- musica de Natal (opcional, comeca desligada) ---------- */
-const music = (() => {
-  // "Jingle Bells" (inicio do refrao): melodias tradicionais, sintetizadas aqui
-  const F = { G3: 196.0, A3: 220.0, B3: 246.94, C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, Fs4: 369.99, G4: 392.0, A4: 440.0, B4: 493.88, C5: 523.25 };
-  const VERSE = [
-    ['G4',1],['E4',.5],['D4',.5],['C4',.5],['G3',2.5],
-    ['G4',1],['E4',.5],['D4',.5],['C4',.5],['A3',2.5],
-    ['A4',1],['F4',.5],['E4',.5],['D4',.5],['B3',2.5],
-    ['G4',1],['G4',.5],['F4',.5],['D4',.5],['E4',2.5],
-    ['G4',1],['E4',.5],['D4',.5],['C4',.5],['G3',2.5],
-    ['G4',1],['E4',.5],['D4',.5],['C4',.5],['A3',2.5],
-    ['A4',1],['F4',.5],['E4',.5],['D4',.5],['G4',1],['G4',1],['G4',.5],['G4',.5],
-    ['A4',1],['G4',.5],['F4',.5],['D4',.5],['C4',3],[null,1]
-  ];
-  const CHORUS = [
-    ['E4',1],['E4',1],['E4',2],['E4',1],['E4',1],['E4',2],['E4',1],['G4',1],['C4',1.5],['D4',.5],['E4',4],[null,1],
-    ['D4',1],
-    ['G4',1],['G4',.5],['A4',.5],['G4',.5],['Fs4',.5],['E4',1],['E4',1],['E4',1],
-    ['A4',1],['A4',.5],['B4',.5],['A4',.5],['G4',.5],['Fs4',1],['D4',1],['D4',1],
-    ['B4',1],['B4',.5],['C5',.5],['B4',.5],['A4',.5],['G4',1],['E4',1],['D4',.5],['D4',.5],
-    ['E4',1],['A4',1],['Fs4',1],['G4',3],[null,2]
-  ];
-  const TUNE = VERSE.concat(CHORUS);
-  const BEAT = 0.5;
-  let ctx = null, master = null, timer = null, on = false;
-
-  function note(freq, t, dur) {
-    const g = ctx.createGain();
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(0.28, t + 0.012);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + Math.max(dur * 1.5, 0.5));
-    g.connect(master);
-    [['triangle', 1, 1], ['sine', 2, 0.35], ['sine', 3, 0.12]].forEach(([type, mul, vol]) => {
-      const o = ctx.createOscillator(), og = ctx.createGain();
-      o.type = type; o.frequency.value = freq * mul; og.gain.value = vol;
-      o.connect(og); og.connect(g); o.start(t); o.stop(t + Math.max(dur * 1.5, 0.5) + 0.05);
-    });
-  }
-  function loop() {
-    let t = ctx.currentTime + 0.15;
-    for (const [n, b] of TUNE) { if (n) note(F[n], t, b * BEAT); t += b * BEAT; }
-    timer = setTimeout(loop, Math.max((t - ctx.currentTime) * 1000, 500));
-  }
-  function setUi() { const b = $('music'); b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); b.textContent = on ? '⏸ Música' : '🎵 Música'; }
-  function toggle() {
-    if (!on) {
-      const AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) return;
-      ctx = new AC(); master = ctx.createGain(); master.gain.value = 0.35; master.connect(ctx.destination);
-      ctx.resume(); on = true; loop();
-    } else {
-      on = false; clearTimeout(timer);
-      const c = ctx; master.gain.setTargetAtTime(0, c.currentTime, 0.05); setTimeout(() => c.close(), 400); ctx = null;
-    }
-    setUi();
-  }
-  document.addEventListener('visibilitychange', () => {
-    if (!ctx) return;
-    if (document.hidden) ctx.suspend(); else ctx.resume();
-  });
-  $('music').onclick = toggle;
-  return { toggle };
-})();
 
 /* ---------- neve ---------- */
 (function snow() {
