@@ -44,7 +44,6 @@ header{text-align:center;padding:96px 20px 18px}
 header h1{font-family:'Dancing Script','Segoe Script',cursive;font-weight:700;font-size:clamp(3.6rem,17vw,6rem);line-height:1;margin:10px 0 0;letter-spacing:0}
 header p{font-family:'Dancing Script','Segoe Script',cursive;font-weight:600;margin:10px 0 0;color:var(--gold);font-size:clamp(1.9rem,8vw,2.8rem);line-height:1.1;letter-spacing:.01em}
 .rule{width:56px;height:1px;background:var(--gold);margin:22px auto 0;opacity:.7}
-.count{display:inline-block;margin-top:18px;font-size:.92rem;color:var(--gold);border:1px solid rgba(217,183,121,.45);border-radius:999px;padding:6px 16px;background:rgba(255,255,255,.04)}
 
 main{max-width:940px;margin:0 auto;padding:8px 18px 90px;position:relative;z-index:1}
 
@@ -193,7 +192,6 @@ h2.list-title::after{content:"";display:block;width:36px;height:1px;background:v
   <h1>Bom Natal</h1>
   <p>Miguel &amp; Natália</p>
   <div class="rule"></div>
-  <div class="count" id="count"></div>
 </header>
 <main id="app"></main>
 
@@ -234,17 +232,6 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const safeUrl = u => { if (!u) return ''; try { const x = new URL(u, location.href); return /^https?:$/.test(x.protocol) ? x.href : ''; } catch { return ''; } };
 const $ = id => document.getElementById(id);
 
-/* ---------- contagem decrescente ---------- */
-function countdownText() {
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const days = Math.round((new Date(now.getFullYear(), 11, 25) - today) / 86400000);
-  if (days > 1) return `🎄 Faltam ${days} dias para o Natal`;
-  if (days === 1) return '🎄 Amanhã é Natal!';
-  if (days === 0) return '🎄 Hoje é Natal! Feliz Natal!';
-  return '🎄 Feliz Natal!';
-}
-$('count').textContent = countdownText();
 
 /* ---------- mensagens de boas-vindas ---------- */
 const WELCOME = {
