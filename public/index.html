@@ -82,6 +82,7 @@ button.soft:hover{background:#d8e8dc}
 .chip{background:rgba(255,255,255,.08);color:var(--cream);border:1px solid var(--line);padding:8px 14px;font-weight:500;font-size:.9rem}
 .chip:hover{background:rgba(255,255,255,.16)}
 .chip.on{background:var(--gold);color:#2b2316;border-color:var(--gold)}
+.chip.free{border-color:rgba(217,183,121,.65);margin-right:6px}
 .sort{font-size:.85rem;color:rgba(251,246,238,.7);display:flex;align-items:center;gap:8px}
 .sort select{font:inherit;background:rgba(255,255,255,.08);color:var(--cream);border:1px solid var(--line);border-radius:999px;padding:7px 12px}
 .sort select option{color:#222}
@@ -183,6 +184,7 @@ let state = null;
 let tab = null;        // 'natalia' | 'miguel' | 'mine'
 let filt = 'all';      // filtro de preco
 let sortBy = 'none';   // ordenacao
+let onlyFree = false;  // mostrar so as prendas ainda disponiveis
 const seed = Math.random();
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -260,6 +262,7 @@ const BUCKETS = [
 function applyFilters(items) {
   const b = BUCKETS.find(x => x.id === filt);
   let out = items.map(i => ({ i, p: priceNum(i.price) }));
+  if (onlyFree) out = out.filter(x => !x.i.reserved && !x.i.mine);
   if (b && b.ok) out = out.filter(x => x.p != null && b.ok(x.p));
   if (sortBy !== 'none') {
     const k = sortBy === 'asc' ? 1 : -1;
@@ -402,7 +405,7 @@ function render() {
   }
 
   html += `<div class="filters">
-      <div class="chips">${BUCKETS.map(b => `<button class="chip ${b.id === filt ? 'on' : ''}" data-filter="${b.id}">${b.label}</button>`).join('')}</div>
+      <div class="chips"><button class="chip free ${onlyFree ? 'on' : ''}" data-free="1" aria-pressed="${onlyFree}">${onlyFree ? '✓ ' : ''}Só disponíveis</button>${BUCKETS.map(b => `<button class="chip ${b.id === filt ? 'on' : ''}" data-filter="${b.id}">${b.label}</button>`).join('')}</div>
       <label class="sort">Ordenar
         <select id="sort">
           <option value="none" ${sortBy === 'none' ? 'selected' : ''}>Pela ordem da carta</option>
@@ -419,7 +422,7 @@ function render() {
     if (owner === me) html += `<div class="note">Esta é a tua carta. Para manter a surpresa, não mostramos o que já foi reservado. 🤫</div>`;
     html += items.length
       ? `<div class="grid">${items.map(card).join('')}</div>`
-      : `<p class="empty">${all.length ? 'Nenhuma prenda neste intervalo de preço.' : 'Ainda sem prendas.'}</p>`;
+      : `<p class="empty">${!all.length ? 'Ainda sem prendas.' : onlyFree && filt === 'all' ? 'Já está tudo reservado! 🎄' : 'Nenhuma prenda com estes filtros.'}</p>`;
   }
   app.innerHTML = html;
 }
@@ -431,6 +434,7 @@ app.addEventListener('click', async e => {
   if (!t) return;
   if (t.dataset.pick) { viewer = t.dataset.pick; store.set(viewer); return load(); }
   if (t.id === 'refresh') return load();
+  if (t.dataset.free) { onlyFree = !onlyFree; return render(); }
   if (t.dataset.filter) { filt = t.dataset.filter; return render(); }
   if (t.dataset.tab) { tab = t.dataset.tab; return render(); }
 
