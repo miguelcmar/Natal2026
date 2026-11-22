@@ -63,8 +63,8 @@ button.soft:hover{background:#d8e8dc}
 .welcome p{margin:0;color:rgba(251,246,238,.88);font-size:1.02rem}
 
 /* separadores */
-.tabs{display:flex;justify-content:center;gap:8px;margin:26px 0 0}
-.tab{background:transparent;color:rgba(251,246,238,.75);border:1px solid var(--line);padding:9px 18px;font-weight:500}
+.tabs{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:26px 0 0}
+.tab{background:transparent;color:rgba(251,246,238,.75);border:1px solid var(--line);padding:9px 15px;font-weight:500;font-size:.92rem}
 .tab:hover{background:rgba(255,255,255,.1)}
 .tab.on{background:var(--cream);color:var(--night);border-color:var(--cream)}
 .tab .n{display:inline-block;min-width:20px;margin-left:6px;padding:0 6px;border-radius:999px;background:var(--gold);color:#2b2316;font-size:.78rem;line-height:20px}
@@ -167,7 +167,7 @@ if (new URLSearchParams(location.search).has('reset')) { store.del(); history.re
 
 let viewer = store.get();
 let state = null;
-let tab = 'cartas';    // 'cartas' | 'mine'
+let tab = null;        // 'natalia' | 'miguel' | 'mine'
 let filt = 'all';      // filtro de preco
 let sortBy = 'none';   // ordenacao
 const seed = Math.random();
@@ -376,11 +376,13 @@ function card(it) {
 function render() {
   const me = state.viewer; // 'miguel' | 'natalia' | null
   const mine = state.items.filter(i => i.mine);
+  if (!tab) tab = me === 'natalia' ? 'miguel' : 'natalia'; // abre na carta da outra pessoa
   let html = `<div class="top"><span>Todas as reservas são anónimas</span>
     <span>${me ? '<a class="edit" href="/admin.html">✎ Editar a minha carta</a>' : ''}<button class="ghost" id="refresh">atualizar</button></span></div>`;
   html += welcomeHtml();
   html += `<div class="tabs">
-      <button class="tab ${tab === 'cartas' ? 'on' : ''}" data-tab="cartas">Cartas</button>
+      <button class="tab ${tab === 'natalia' ? 'on' : ''}" data-tab="natalia">Carta da Natália</button>
+      <button class="tab ${tab === 'miguel' ? 'on' : ''}" data-tab="miguel">Carta do Miguel</button>
       <button class="tab ${tab === 'mine' ? 'on' : ''}" data-tab="mine">As minhas reservas${mine.length ? `<span class="n">${mine.length}</span>` : ''}</button>
     </div>`;
 
@@ -403,8 +405,8 @@ function render() {
         </select>
       </label>
     </div>`;
-  const order = ['natalia', 'miguel'].sort((a, b) => (a === me) - (b === me));
-  for (const owner of order) {
+  {
+    const owner = tab;
     const all = state.items.filter(i => i.owner === owner);
     const items = applyFilters(all);
     html += `<h2 class="list-title">Carta de Natal ${owner === 'natalia' ? 'da' : 'do'} ${NAMES[owner]}</h2>`;
