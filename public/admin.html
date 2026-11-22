@@ -75,7 +75,6 @@ button:disabled{opacity:.5}
     <input id="image" type="url" inputmode="url">
     <img id="prev" class="preview hidden" alt="">
     <div class="row">
-      <div><label for="price">Preço</label><input id="price" placeholder="ex: 39,90 €"></div>
       <div><label for="priority">Prioridade</label>
         <select id="priority"><option value="0">Normal</option><option value="1">Gostava muito</option><option value="2">Sonho ⭐</option></select>
       </div>
@@ -90,10 +89,6 @@ button:disabled{opacity:.5}
 
   <div class="box">
     <b>A minha lista</b>
-    <div class="row" style="margin-top:10px;align-items:center">
-      <button class="sec" id="priceBtn" type="button" style="flex:0 0 auto">Buscar preços em falta</button>
-    </div>
-    <div class="msg" id="priceMsg"></div>
     <div id="list"></div>
   </div>
 </section>
@@ -163,7 +158,7 @@ async function loadItems() {
   $('list').innerHTML = items.length ? items.map(i => `
     <div class="item">
       ${i.image_url ? `<img src="${esc(i.image_url)}" alt="" referrerpolicy="no-referrer">` : '<div class="ph">🎁</div>'}
-      <div class="t"><b>${esc(i.title)}</b><span>${esc(i.price || '')}</span></div>
+      <div class="t"><b>${esc(i.title)}</b><span></span></div>
       <button class="ghost" data-edit="${i.id}">editar</button>
       <button class="ghost" data-del="${i.id}">apagar</button>
     </div>`).join('') : '<p style="color:var(--muted)">Ainda sem prendas.</p>';
@@ -176,7 +171,7 @@ $('list').addEventListener('click', async e => {
     editingId = i.id;
     $('formTitle').textContent = 'Editar prenda';
     $('link').value = i.url || ''; $('title').value = i.title || ''; $('image').value = i.image_url || '';
-    $('price').value = i.price || ''; $('note').value = i.note || ''; $('priority').value = i.priority;
+    $('note').value = i.note || ''; $('priority').value = i.priority;
     showPrev(); window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   if (del && await ask('Apagar esta prenda?', 'Esta ação não pode ser desfeita.', 'Apagar')) {
@@ -194,7 +189,7 @@ $('image').oninput = showPrev;
 function clearForm() {
   editingId = null;
   $('formTitle').textContent = 'Nova prenda';
-  for (const id of ['link', 'title', 'image', 'price', 'note']) $(id).value = '';
+  for (const id of ['link', 'title', 'image', 'note']) $(id).value = '';
   $('priority').value = '0'; showPrev(); say('readMsg', ''); say('saveMsg', '');
 }
 $('cancelBtn').onclick = clearForm;
@@ -212,10 +207,9 @@ $('readBtn').onclick = async () => {
     if (!r.ok) throw new Error(d.error || 'erro');
     if (d.title) $('title').value = d.title;
     if (d.image) $('image').value = d.image;
-    if (d.price) $('price').value = d.price;
     if (d.url) $('link').value = d.url;
     showPrev();
-    const missing = ['title', 'image', 'price'].filter(k => !d[k]);
+    const missing = ['title', 'image'].filter(k => !d[k]);
     say('readMsg', missing.length
       ? 'Li o que consegui. Falta preencher: ' + missing.map(k => ({ title: 'nome', image: 'imagem', price: 'preço' }[k])).join(', ') + '.'
       : 'Pronto! Confirma os dados e guarda.', missing.length ? '' : 'ok');
@@ -225,35 +219,6 @@ $('readBtn').onclick = async () => {
   $('readBtn').disabled = false;
 };
 
-$('priceBtn').onclick = async () => {
-  const todo = items.filter(i => i.url && !i.price);
-  if (!todo.length) return say('priceMsg', 'Todas as prendas com link já têm preço.', 'ok');
-  $('priceBtn').disabled = true;
-  const found = [];
-  for (let k = 0; k < todo.length; k++) {
-    say('priceMsg', `A procurar preços… ${k + 1} de ${todo.length}`);
-    try {
-      const r = await fetch('/api/preview?url=' + encodeURIComponent(todo[k].url), { headers: { 'X-Admin-Token': token } });
-      const d = await r.json();
-      if (r.ok && d.price) found.push({ it: todo[k], price: d.price });
-    } catch { /* passa à seguinte */ }
-  }
-  $('priceBtn').disabled = false;
-  if (!found.length) return say('priceMsg', 'Não consegui ler preços automaticamente. Preenche à mão em «editar».', 'err');
-  say('priceMsg', '');
-  const missing = todo.length - found.length;
-  const text = found.map(f => `${f.it.title}: ${f.price}`).join('\n')
-    + (missing ? `\n\nFaltam ${missing} que tens de preencher à mão.` : '') + '\n\nConfirma os valores na loja antes de comprar.';
-  if (!await ask(`Guardar ${found.length} preço${found.length > 1 ? 's' : ''}?`, text, 'Guardar preços')) return;
-  try {
-    for (const f of found) {
-      const i = f.it;
-      await rpc('admin_save', { p_token: token, p_id: i.id, p_title: i.title, p_url: i.url, p_image: i.image_url,
-        p_price: f.price, p_note: i.note, p_priority: i.priority, p_quantity: i.quantity || 1 });
-    }
-    say('priceMsg', 'Preços guardados ✓', 'ok'); loadItems();
-  } catch { say('priceMsg', 'Erro ao guardar os preços.', 'err'); }
-};
 
 $('saveBtn').onclick = async () => {
   const title = $('title').value.trim();
@@ -263,7 +228,7 @@ $('saveBtn').onclick = async () => {
   try {
     await rpc('admin_save', {
       p_token: token, p_id: editingId, p_title: title, p_url: $('link').value, p_image: $('image').value,
-      p_price: $('price').value, p_note: $('note').value, p_priority: parseInt($('priority').value, 10), p_quantity: 1
+      p_price: '', p_note: $('note').value, p_priority: parseInt($('priority').value, 10), p_quantity: 1
     });
     clearForm(); say('saveMsg', 'Guardado ✓', 'ok'); loadItems();
   } catch { say('saveMsg', 'Erro ao guardar.', 'err'); }

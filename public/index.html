@@ -285,7 +285,7 @@ function howHtml() {
     <li>Abre a carta da <b>Natália</b> ou do <b>Miguel</b> e escolhe uma prenda.</li>
     <li>Carrega em <b>Reservar</b> e confirma. A prenda fica marcada para os outros.</li>
     <li>Enganaste-te? Em <b>As minhas reservas</b> podes desfazer a reserva.</li>
-    <li>Usa os filtros para ver só o que está disponível ou por preço.</li>
+    <li>Usa «Só disponíveis» para esconder o que já foi reservado.</li>
     <li>O Miguel e a Natália não vêem o que foi reservado na sua própria carta.</li>
   </ul><p class="anon">🤫 Todas as reservas são anónimas.</p></section>`;
 }
@@ -317,7 +317,7 @@ const BUCKETS = [
 ];
 function applyFilters(items) {
   const b = BUCKETS.find(x => x.id === filt);
-  let out = items.map(i => ({ i, p: priceNum(i.price) }));
+  let out = items.map(i => ({ i, p: null }));
   if (onlyFree) out = out.filter(x => !x.i.reserved && !x.i.mine);
   if (b && b.ok) out = out.filter(x => x.p != null && b.ok(x.p));
   if (sortBy !== 'none') {
@@ -427,7 +427,6 @@ function card(it) {
       <div class="body">
         ${it.priority >= 2 ? '<span class="badge">✦ Sonho</span>' : it.priority === 1 ? '<span class="badge">Gostava muito</span>' : ''}
         <div class="title">${esc(it.title)}</div>
-        ${it.price ? `<div class="price">${esc(it.price)}</div>` : ''}
         ${it.note ? `<div class="small">${esc(it.note)}</div>` : ''}
         ${status}
         <div class="actions">
@@ -461,14 +460,7 @@ function render() {
   }
 
   html += `<div class="filters">
-      <div class="chips"><button class="chip free ${onlyFree ? 'on' : ''}" data-free="1" aria-pressed="${onlyFree}">${onlyFree ? '✓ ' : ''}Só disponíveis</button>${BUCKETS.map(b => `<button class="chip ${b.id === filt ? 'on' : ''}" data-filter="${b.id}">${b.label}</button>`).join('')}</div>
-      <label class="sort">Ordenar
-        <select id="sort">
-          <option value="none" ${sortBy === 'none' ? 'selected' : ''}>Pela ordem da carta</option>
-          <option value="asc" ${sortBy === 'asc' ? 'selected' : ''}>Preço: do mais baixo</option>
-          <option value="desc" ${sortBy === 'desc' ? 'selected' : ''}>Preço: do mais alto</option>
-        </select>
-      </label>
+      <div class="chips"><button class="chip free ${onlyFree ? 'on' : ''}" data-free="1" aria-pressed="${onlyFree}">${onlyFree ? '✓ ' : ''}Só disponíveis</button></div>
     </div>`;
   {
     const owner = tab;
@@ -478,7 +470,7 @@ function render() {
     if (owner === me) html += `<div class="note">Esta é a tua carta. Para manter a surpresa, não mostramos o que já foi reservado. 🤫</div>`;
     html += items.length
       ? `<div class="grid">${items.map(card).join('')}</div>`
-      : `<p class="empty">${!all.length ? 'Ainda sem prendas.' : onlyFree && filt === 'all' ? 'Já está tudo reservado! 🎄' : 'Nenhuma prenda com estes filtros.'}</p>`;
+      : `<p class="empty">${!all.length ? 'Ainda sem prendas.' : onlyFree ? 'Já está tudo reservado! 🎄' : 'Nenhuma prenda.'}</p>`;
   }
   app.innerHTML = html + howHtml();
 }
