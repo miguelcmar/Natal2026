@@ -39,7 +39,7 @@ button:disabled{opacity:.5}
 .modal[hidden]{display:none}
 .sheet{background:#fff;border-radius:16px;padding:22px 20px 16px;max-width:360px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.35)}
 .sheet h3{margin:0 0 6px;font-size:1.1rem}
-.sheet p{margin:0;color:var(--muted)}
+.sheet p{margin:0;color:var(--muted);white-space:pre-line;max-height:50vh;overflow:auto}
 .m-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
 .m-actions .no{background:#f1e9db;color:var(--ink)}
 </style>
@@ -91,6 +91,10 @@ button:disabled{opacity:.5}
 
   <div class="box">
     <b>A minha lista</b>
+    <div class="row" style="margin-top:10px;align-items:center">
+      <button class="sec" id="priceBtn" type="button" style="flex:0 0 auto">Buscar preços em falta</button>
+    </div>
+    <div class="msg" id="priceMsg"></div>
     <div id="list"></div>
   </div>
 </section>
@@ -220,6 +224,36 @@ $('readBtn').onclick = async () => {
     say('readMsg', 'Não consegui ler este link. Preenche à mão.', 'err');
   }
   $('readBtn').disabled = false;
+};
+
+$('priceBtn').onclick = async () => {
+  const todo = items.filter(i => i.url && !i.price);
+  if (!todo.length) return say('priceMsg', 'Todas as prendas com link já têm preço.', 'ok');
+  $('priceBtn').disabled = true;
+  const found = [];
+  for (let k = 0; k < todo.length; k++) {
+    say('priceMsg', `A procurar preços… ${k + 1} de ${todo.length}`);
+    try {
+      const r = await fetch('/api/preview?url=' + encodeURIComponent(todo[k].url), { headers: { 'X-Admin-Token': token } });
+      const d = await r.json();
+      if (r.ok && d.price) found.push({ it: todo[k], price: d.price });
+    } catch { /* passa à seguinte */ }
+  }
+  $('priceBtn').disabled = false;
+  if (!found.length) return say('priceMsg', 'Não consegui ler preços automaticamente. Preenche à mão em «editar».', 'err');
+  say('priceMsg', '');
+  const missing = todo.length - found.length;
+  const text = found.map(f => `${f.it.title}: ${f.price}`).join('\n')
+    + (missing ? `\n\nFaltam ${missing} que tens de preencher à mão.` : '') + '\n\nConfirma os valores na loja antes de comprar.';
+  if (!await ask(`Guardar ${found.length} preço${found.length > 1 ? 's' : ''}?`, text, 'Guardar preços')) return;
+  try {
+    for (const f of found) {
+      const i = f.it;
+      await rpc('admin_save', { p_token: token, p_id: i.id, p_title: i.title, p_url: i.url, p_image: i.image_url,
+        p_price: f.price, p_note: i.note, p_priority: i.priority, p_quantity: i.quantity || 1 });
+    }
+    say('priceMsg', 'Preços guardados ✓', 'ok'); loadItems();
+  } catch { say('priceMsg', 'Erro ao guardar os preços.', 'err'); }
 };
 
 $('saveBtn').onclick = async () => {
