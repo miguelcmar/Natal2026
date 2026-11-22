@@ -387,7 +387,6 @@ function card(it) {
     <div class="card ${done ? 'done' : ''}">
       <div class="img">${img ? `<img src="${esc(img)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : '🎁'}${stamp}</div>
       <div class="body">
-        ${it.priority >= 2 ? '<span class="badge">✦ Sonho</span>' : it.priority === 1 ? '<span class="badge">Gostava muito</span>' : ''}
         <div class="title">${esc(it.title)}</div>
         ${it.note ? `<div class="small">${esc(it.note)}</div>` : ''}
         ${status}

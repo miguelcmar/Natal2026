@@ -74,11 +74,6 @@ button:disabled{opacity:.5}
     <label for="image">Imagem (endereço da imagem)</label>
     <input id="image" type="url" inputmode="url">
     <img id="prev" class="preview hidden" alt="">
-    <div class="row">
-      <div><label for="priority">Prioridade</label>
-        <select id="priority"><option value="0">Normal</option><option value="1">Gostava muito</option><option value="2">Sonho ⭐</option></select>
-      </div>
-    </div>
     <label for="note">Nota (tamanho, cor...)</label>
     <input id="note">    <div class="msg" id="saveMsg"></div>
     <div class="row" style="margin-top:8px">
@@ -171,7 +166,7 @@ $('list').addEventListener('click', async e => {
     editingId = i.id;
     $('formTitle').textContent = 'Editar prenda';
     $('link').value = i.url || ''; $('title').value = i.title || ''; $('image').value = i.image_url || '';
-    $('note').value = i.note || ''; $('priority').value = i.priority;
+    $('note').value = i.note || '';
     showPrev(); window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   if (del && await ask('Apagar esta prenda?', 'Esta ação não pode ser desfeita.', 'Apagar')) {
@@ -190,7 +185,7 @@ function clearForm() {
   editingId = null;
   $('formTitle').textContent = 'Nova prenda';
   for (const id of ['link', 'title', 'image', 'note']) $(id).value = '';
-  $('priority').value = '0'; showPrev(); say('readMsg', ''); say('saveMsg', '');
+  showPrev(); say('readMsg', ''); say('saveMsg', '');
 }
 $('cancelBtn').onclick = clearForm;
 
@@ -228,7 +223,7 @@ $('saveBtn').onclick = async () => {
   try {
     await rpc('admin_save', {
       p_token: token, p_id: editingId, p_title: title, p_url: $('link').value, p_image: $('image').value,
-      p_price: '', p_note: $('note').value, p_priority: parseInt($('priority').value, 10), p_quantity: 1
+      p_price: '', p_note: $('note').value, p_priority: 0, p_quantity: 1
     });
     clearForm(); say('saveMsg', 'Guardado ✓', 'ok'); loadItems();
   } catch { say('saveMsg', 'Erro ao guardar.', 'err'); }
