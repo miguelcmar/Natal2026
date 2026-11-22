@@ -51,6 +51,7 @@ button.ghost:hover{background:transparent;opacity:1}
 
 .top{display:flex;justify-content:space-between;align-items:center;font-size:.85rem;color:rgba(251,246,238,.6);margin:6px 0 0}
 .top button.ghost{color:rgba(251,246,238,.8)}
+.top .edit{color:var(--gold);text-decoration:none;font-weight:600;margin-right:12px}
 
 h2.list-title{font-family:var(--serif);font-weight:400;font-size:clamp(1.5rem,5vw,2rem);margin:44px 0 6px;text-align:center}
 h2.list-title::after{content:"";display:block;width:36px;height:1px;background:var(--gold);margin:14px auto 0;opacity:.7}
@@ -174,7 +175,7 @@ function render() {
   const me = state.viewer; // 'miguel' | 'natalia' | null
   const order = ['natalia', 'miguel'].sort((a, b) => (a === me) - (b === me));
   let html = `<div class="top"><span>Todas as reservas são anónimas</span>
-    <button class="ghost" id="refresh">atualizar</button></div>`;
+    <span>${me ? '<a class="edit" href="/admin.html">✎ Editar a minha carta</a>' : ''}<button class="ghost" id="refresh">atualizar</button></span></div>`;
   for (const owner of order) {
     const items = state.items.filter(i => i.owner === owner);
     html += `<h2 class="list-title">Carta de Natal ${owner === 'natalia' ? 'da' : 'do'} ${NAMES[owner]}</h2>`;

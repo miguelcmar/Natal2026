@@ -3,8 +3,8 @@
 Site de cartas de Natal com reservas anónimas, sem passwords.
 
 - `public/index.html`: página da família. Na primeira vez escolhem quem são; fica guardado nesse browser.
-- `public/admin.html`: área para adicionar/editar prendas (link pessoal, abre-se uma vez).
-- `functions/api/preview.js`: lê título, imagem e preço de um link de loja (só com o link de admin).
+- `public/admin.html`: área para adicionar/editar prendas (abre-se pelo botão "Editar a minha carta" de quem escolheu Miguel ou Natália).
+- `functions/api/preview.js`: lê título, imagem e preço de um link de loja (só para Miguel e Natália).
 
 A base de dados (Supabase, projeto `natal-2026`) já está criada e testada.
 
@@ -18,9 +18,9 @@ Framework preset: **None** · Build command: **vazio** · Build output directory
 ## Uso
 - Família: enviar só o endereço do site. Cada pessoa escolhe o nome na primeira vez.
 - Se alguém escolher o nome errado: abrir o endereço com `?reset` no fim (ex.: `https://NOME.pages.dev/?reset`).
-- Miguel e Natália: abrir uma vez o link pessoal de admin (em cada aparelho). Depois basta `/admin.html`.
+- Miguel e Natália: ao escolherem o seu nome aparece "✎ Editar a minha carta".
 
 ## Privacidade
 - A base de dados nem envia as reservas da própria lista de quem escolheu "Miguel" ou "Natália".
 - É um sistema de confiança: quem escolher o nome de outra pessoa vê o que essa pessoa veria.
-- O link de admin é secreto: não o partilhar.
+- Quem escolher "Miguel" ou "Natália" também pode editar essa carta (sem passwords, é um sistema de confiança).

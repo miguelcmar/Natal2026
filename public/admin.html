@@ -43,10 +43,11 @@ button:disabled{opacity:.5}
 
 <section id="denied" class="box hidden">
   <b>Sem acesso.</b>
-  <p>Abre o teu link pessoal de admin (o que o Miguel te enviou). Só precisas de o abrir uma vez em cada telemóvel ou computador.</p>
+  <p>Só o Miguel e a Natália podem editar. Abre a <a href="/">página principal</a> e escolhe o teu nome.</p>
 </section>
 
 <section id="app" class="hidden">
+  <a href="/" style="color:var(--green);text-decoration:none">← Voltar às cartas</a><br>
   <b id="who"></b>
   <div class="hint">Aqui não aparece o estado das reservas, para manteres a surpresa. 🤫</div>
 
@@ -95,8 +96,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 let token = '', owner = null, items = [], editingId = null;
 
 const store = {
-  get() { try { return localStorage.getItem('natal_admin') || ''; } catch { return ''; } },
-  set(v) { try { localStorage.setItem('natal_admin', v); } catch {} }
+  get() { try { return localStorage.getItem('natal_viewer') || ''; } catch { return ''; } }
 };
 
 async function rpc(fn, args) {
@@ -111,9 +111,7 @@ async function rpc(fn, args) {
 function say(id, text, cls = '') { const el = $(id); el.textContent = text; el.className = 'msg ' + cls; }
 
 async function start() {
-  // primeira vez: o token vem no link (depois do #) e fica guardado neste aparelho
-  const m = location.hash.match(/t=([0-9a-f]+)/i);
-  if (m) { store.set(m[1]); history.replaceState(null, '', location.pathname); }
+  // a identidade e a que a pessoa escolheu na pagina principal
   token = store.get();
   if (!token) return $('denied').classList.remove('hidden');
   try { owner = await rpc('admin_whoami', { p_token: token }); }
