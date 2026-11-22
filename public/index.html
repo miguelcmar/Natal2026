@@ -53,6 +53,22 @@ button.ghost:hover{background:transparent;opacity:1}
 .top button.ghost{color:rgba(251,246,238,.8)}
 .top .edit{color:var(--gold);text-decoration:none;font-weight:600;margin-right:12px}
 
+/* boas-vindas */
+.welcome{max-width:600px;margin:20px auto 0;text-align:center;border:1px solid rgba(217,183,121,.4);background:rgba(255,255,255,.06);border-radius:22px;padding:24px 22px}
+.welcome .emoji{font-size:2rem;line-height:1}
+.welcome h2{font-family:var(--serif);font-weight:600;font-size:clamp(1.4rem,5vw,1.8rem);margin:10px 0 8px}
+.welcome p{margin:0;color:rgba(251,246,238,.88);font-size:1.02rem}
+
+/* filtro de preco */
+.filters{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;justify-content:center;margin:26px 0 0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chip{background:rgba(255,255,255,.08);color:var(--cream);border:1px solid var(--line);padding:8px 14px;font-weight:500;font-size:.9rem}
+.chip:hover{background:rgba(255,255,255,.16)}
+.chip.on{background:var(--gold);color:#2b2316;border-color:var(--gold)}
+.sort{font-size:.85rem;color:rgba(251,246,238,.7);display:flex;align-items:center;gap:8px}
+.sort select{font:inherit;background:rgba(255,255,255,.08);color:var(--cream);border:1px solid var(--line);border-radius:999px;padding:7px 12px}
+.sort select option{color:#222}
+
 h2.list-title{font-family:var(--serif);font-weight:400;font-size:clamp(1.5rem,5vw,2rem);margin:44px 0 6px;text-align:center}
 h2.list-title::after{content:"";display:block;width:36px;height:1px;background:var(--gold);margin:14px auto 0;opacity:.7}
 .note{max-width:460px;margin:14px auto 4px;text-align:center;font-size:.9rem;color:rgba(251,246,238,.75);border:1px solid var(--line);border-radius:14px;padding:10px 14px;background:rgba(255,255,255,.05)}
@@ -75,6 +91,16 @@ h2.list-title::after{content:"";display:block;width:36px;height:1px;background:v
 .reserved{color:var(--green);font-weight:600;font-size:.95rem}
 .reserved .ghost{color:var(--muted);font-weight:400;font-size:.85rem}
 
+/* janela de confirmacao */
+.modal{position:fixed;inset:0;z-index:100;background:rgba(6,20,15,.6);display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px)}
+.modal[hidden]{display:none}
+.sheet{background:var(--paper);color:var(--ink);border-radius:20px;padding:24px 22px 18px;max-width:380px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.sheet h3{font-family:var(--serif);font-weight:600;font-size:1.25rem;margin:0 0 8px}
+.sheet p{margin:0;color:var(--muted)}
+.m-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+.m-actions .no{background:#f1e9db;color:var(--ink)}
+.m-actions .no:hover{background:#e8dec9}
+
 @media (prefers-reduced-motion: reduce){ button{transition:none} }
 </style>
 </head>
@@ -88,6 +114,17 @@ h2.list-title::after{content:"";display:block;width:36px;height:1px;background:v
   <div class="rule"></div>
 </header>
 <main id="app"></main>
+
+<div id="modal" class="modal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <h3 id="mTitle"></h3>
+    <p id="mText"></p>
+    <div class="m-actions">
+      <button class="no" id="mNo" type="button">Cancelar</button>
+      <button id="mYes" type="button">Confirmar</button>
+    </div>
+  </div>
+</div>
 
 <script>
 const SB_URL = 'https://stonleipysdlaprwowec.supabase.co';
@@ -105,9 +142,100 @@ if (new URLSearchParams(location.search).has('reset')) { store.del(); history.re
 
 let viewer = store.get();
 let state = null;
+let filt = 'all';      // filtro de preco
+let sortBy = 'none';   // ordenacao
+const seed = Math.random();
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const safeUrl = u => { try { const x = new URL(u); return /^https?:$/.test(x.protocol) ? x.href : ''; } catch { return ''; } };
+
+/* ---------- mensagens de boas-vindas ---------- */
+const WELCOME = {
+  'marco-rita': { name: 'Marco e Rita', msgs: [
+    'O Pai Natal só deixa entrar quem se portou bem, e por milagre passaram na triagem. Escolham uma prenda, reservem, e o segredo fica entre nós. 🤫',
+    'As renas estão de dieta, mas o Miguel e a Natália não: ainda pedem prendas! Vejam as cartas e reservem antes que o Pai Natal se adiante.',
+    'Missão de Natal para o casal mais esperto da família: escolher uma prenda, reservar e fingir surpresa no dia 25. 🎁' ] },
+  'cotas': { name: 'Cotas', msgs: [
+    'Os duendes avisaram que os cotas são os melhores a escolher prendas. Sem pressão, mas a fasquia está altíssima! 😄',
+    'Aqui ninguém precisa de embrulhar já. Escolham a prenda, carreguem em «Vou comprar este» e o Pai Natal trata do resto.',
+    'O Pai Natal está a contar convosco. Até mandou um email, mas foi parar ao spam. Por isso, venham ver as cartas! 📬' ] },
+  'marta-nuno': { name: 'Marta e Nuno', msgs: [
+    'O Pai Natal já tem as vossas caras no ficheiro dos «muito simpáticos». Aproveitem: escolham uma prenda e reservem.',
+    'Aviso dos duendes: quem reserva cedo dorme descansado; quem fica para a última corre pelo centro comercial a 24 de dezembro. 🏃',
+    'Bem-vindos à oficina do Pai Natal, versão digital! Os duendes trabalham de graça, mas só aceitam reservas anónimas. 🤫' ] },
+  'natalia': { name: 'Natália', msgs: [
+    'As renas confirmaram: a tua carta está impecável. Agora espreita a do Miguel e reserva a prenda antes que o Pai Natal se adiante. 🤫',
+    'O Miguel jura que se portou bem este ano. Os duendes pedem provas, mas a decisão final é tua. 😅',
+    'O que estiver reservado na tua carta é segredo de Estado. Quanto à do Miguel, vê à vontade.' ] },
+  'miguel': { name: 'Miguel', msgs: [
+    'Os duendes dizem que a tua carta já dava para um inventário. 😄 Agora espreita a da Natália e escolhe bem: ela repara em tudo!',
+    'O Pai Natal já conferiu a lista: portaste-te bem (mais ou menos). Reserva uma prenda da Natália e finge que a ideia foi tua.',
+    'Regra de ouro: a tua carta é uma surpresa, por isso não vês o que já foi reservado. Resiste à curiosidade! 🤫' ] }
+};
+function welcomeHtml() {
+  const w = WELCOME[viewer];
+  const name = w ? w.name : '';
+  const msg = w ? w.msgs[Math.floor(seed * w.msgs.length)] : 'Espreita as cartas e reserva uma prenda. O segredo fica entre nós. 🤫';
+  return `<section class="welcome"><div class="emoji">🎅</div>
+    <h2>Ho ho ho${name ? ', ' + esc(name) : ''}!</h2><p>${esc(msg)}</p></section>`;
+}
+
+/* ---------- preco ---------- */
+function priceNum(s) {
+  const m = String(s || '').match(/\d[\d.,\s]*/);
+  if (!m) return null;
+  let t = m[0].replace(/\s+/g, '').replace(/[.,]+$/, '');
+  const dots = (t.match(/\./g) || []).length, commas = (t.match(/,/g) || []).length;
+  if (dots && commas) {
+    const dec = t.lastIndexOf(',') > t.lastIndexOf('.') ? ',' : '.';
+    const th = dec === ',' ? '.' : ',';
+    t = t.split(th).join('').replace(dec, '.');
+  } else if (commas) {
+    t = commas === 1 && /,\d{1,2}$/.test(t) ? t.replace(',', '.') : t.split(',').join('');
+  } else if (dots) {
+    t = dots === 1 && !/^\d{1,3}\.\d{3}$/.test(t) ? t : t.split('.').join('');
+  }
+  const n = parseFloat(t);
+  return Number.isFinite(n) ? n : null;
+}
+const BUCKETS = [
+  { id: 'all', label: 'Todos' },
+  { id: 'b1', label: 'Até 25 €', ok: p => p <= 25 },
+  { id: 'b2', label: '25 – 50 €', ok: p => p > 25 && p <= 50 },
+  { id: 'b3', label: '50 – 100 €', ok: p => p > 50 && p <= 100 },
+  { id: 'b4', label: 'Mais de 100 €', ok: p => p > 100 }
+];
+function applyFilters(items) {
+  const b = BUCKETS.find(x => x.id === filt);
+  let out = items.map(i => ({ i, p: priceNum(i.price) }));
+  if (b && b.ok) out = out.filter(x => x.p != null && b.ok(x.p));
+  if (sortBy !== 'none') {
+    const k = sortBy === 'asc' ? 1 : -1;
+    out.sort((a, b2) => (a.p == null) - (b2.p == null) || (a.p == null ? 0 : (a.p - b2.p) * k));
+  }
+  return out.map(x => x.i);
+}
+
+/* ---------- janela de confirmacao ---------- */
+function ask(title, text, okLabel = 'Confirmar') {
+  return new Promise(resolve => {
+    const m = document.getElementById('modal'), yes = document.getElementById('mYes'), no = document.getElementById('mNo');
+    document.getElementById('mTitle').textContent = title;
+    document.getElementById('mText').textContent = text || '';
+    yes.textContent = okLabel;
+    m.hidden = false; no.focus();
+    const done = v => {
+      m.hidden = true;
+      yes.onclick = no.onclick = m.onclick = null; document.removeEventListener('keydown', key);
+      resolve(v);
+    };
+    const key = e => { if (e.key === 'Escape') done(false); };
+    yes.onclick = () => done(true);
+    no.onclick = () => done(false);
+    m.onclick = e => { if (e.target === m) done(false); };
+    document.addEventListener('keydown', key);
+  });
+}
 
 async function rpc(fn, args) {
   const r = await fetch(`${SB_URL}/rest/v1/rpc/${fn}`, {
@@ -176,31 +304,51 @@ function render() {
   const order = ['natalia', 'miguel'].sort((a, b) => (a === me) - (b === me));
   let html = `<div class="top"><span>Todas as reservas são anónimas</span>
     <span>${me ? '<a class="edit" href="/admin.html">✎ Editar a minha carta</a>' : ''}<button class="ghost" id="refresh">atualizar</button></span></div>`;
+  html += welcomeHtml();
+  html += `<div class="filters">
+      <div class="chips">${BUCKETS.map(b => `<button class="chip ${b.id === filt ? 'on' : ''}" data-filter="${b.id}">${b.label}</button>`).join('')}</div>
+      <label class="sort">Ordenar
+        <select id="sort">
+          <option value="none" ${sortBy === 'none' ? 'selected' : ''}>Pela ordem da carta</option>
+          <option value="asc" ${sortBy === 'asc' ? 'selected' : ''}>Preço: do mais baixo</option>
+          <option value="desc" ${sortBy === 'desc' ? 'selected' : ''}>Preço: do mais alto</option>
+        </select>
+      </label>
+    </div>`;
   for (const owner of order) {
-    const items = state.items.filter(i => i.owner === owner);
+    const all = state.items.filter(i => i.owner === owner);
+    const items = applyFilters(all);
     html += `<h2 class="list-title">Carta de Natal ${owner === 'natalia' ? 'da' : 'do'} ${NAMES[owner]}</h2>`;
     if (owner === me) html += `<div class="note">Esta é a tua carta. Para manter a surpresa, não mostramos o que já foi reservado. 🤫</div>`;
     html += items.length
       ? `<div class="grid">${items.map(card).join('')}</div>`
-      : `<p class="empty">Ainda sem prendas.</p>`;
+      : `<p class="empty">${all.length ? 'Nenhuma prenda neste intervalo de preço.' : 'Ainda sem prendas.'}</p>`;
   }
   app.innerHTML = html;
 }
 
 app.addEventListener('click', async e => {
-  const t = e.target;
+  const t = e.target.closest('button');
+  if (!t) return;
   if (t.dataset.pick) { viewer = t.dataset.pick; store.set(viewer); return load(); }
   if (t.id === 'refresh') return load();
+  if (t.dataset.filter) { filt = t.dataset.filter; return render(); }
   const rid = t.dataset.reserve, uid = t.dataset.undo;
   if (!rid && !uid) return;
-  if (uid && !confirm('Desfazer a reserva desta prenda?')) return;
+  const it = state.items.find(i => i.id === (rid || uid));
+  const name = it ? `«${it.title}»` : 'esta prenda';
+  const ok = rid
+    ? await ask('Reservar esta prenda?', `${name} fica marcada como reservada, sem mostrar o teu nome, para ninguém comprar o mesmo.`, 'Reservar')
+    : await ask('Desfazer a reserva?', `${name} volta a ficar livre para qualquer pessoa reservar.`, 'Desfazer reserva');
+  if (!ok) return;
   t.disabled = true;
   try {
-    const ok = await rpc('reserve_item', { p_viewer: viewer, p_item_id: rid || uid, p_reserve: !!rid });
-    if (rid && !ok) alert('Alguém acabou de reservar esta prenda.');
+    const done = await rpc('reserve_item', { p_viewer: viewer, p_item_id: rid || uid, p_reserve: !!rid });
+    if (rid && !done) alert('Alguém acabou de reservar esta prenda.');
   } catch { alert('Não foi possível guardar. Tenta outra vez.'); }
   await load();
 });
+app.addEventListener('change', e => { if (e.target.id === 'sort') { sortBy = e.target.value; render(); } });
 
 document.addEventListener('visibilitychange', () => { if (!document.hidden && viewer && state) load(); });
 
@@ -244,7 +392,7 @@ if (viewer) load(); else renderPicker();
     });
   }
 
-  function draw(t) {
+  function draw() {
     ctx.clearRect(0, 0, w, h);
     for (const f of flakes) {
       const sp = sprites[f.s];
@@ -263,10 +411,10 @@ if (viewer) load(); else renderPicker();
       if (f.y > h + 8) { f.y = -8; f.x = Math.random() * w; }
       if (f.x < -10) f.x = w + 10; else if (f.x > w + 10) f.x = -10;
     }
-    draw(now);
+    draw();
   }
 
-  function start() { cancelAnimationFrame(raf); last = performance.now(); if (still) draw(0); else raf = requestAnimationFrame(tick); }
+  function start() { cancelAnimationFrame(raf); last = performance.now(); if (still) draw(); else raf = requestAnimationFrame(tick); }
 
   let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { setup(); start(); }, 150); });
   document.addEventListener('visibilitychange', () => { if (document.hidden) cancelAnimationFrame(raf); else start(); });

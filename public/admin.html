@@ -35,6 +35,13 @@ button:disabled{opacity:.5}
 .item .t b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .item .t span{font-size:.85rem;color:var(--muted)}
 .hidden{display:none}
+.modal{position:fixed;inset:0;z-index:100;background:rgba(30,24,18,.5);display:flex;align-items:center;justify-content:center;padding:20px}
+.modal[hidden]{display:none}
+.sheet{background:#fff;border-radius:16px;padding:22px 20px 16px;max-width:360px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.sheet h3{margin:0 0 6px;font-size:1.1rem}
+.sheet p{margin:0;color:var(--muted)}
+.m-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
+.m-actions .no{background:#f1e9db;color:var(--ink)}
 </style>
 </head>
 <body>
@@ -87,6 +94,17 @@ button:disabled{opacity:.5}
 </section>
 </main>
 
+<div id="modal" class="modal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <h3 id="mTitle"></h3>
+    <p id="mText"></p>
+    <div class="m-actions">
+      <button class="no" id="mNo" type="button">Cancelar</button>
+      <button id="mYes" type="button">Confirmar</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const SB_URL = 'https://stonleipysdlaprwowec.supabase.co';
 const SB_KEY = 'sb_publishable_UqaAv23czfi1xo9OiiB-IA_d0-0Hbwa';
@@ -94,6 +112,19 @@ const NAMES = { miguel: 'Miguel', natalia: 'Natália' };
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let token = '', owner = null, items = [], editingId = null;
+
+function ask(title, text, okLabel = 'Confirmar') {
+  return new Promise(resolve => {
+    const m = $('modal'), yes = $('mYes'), no = $('mNo');
+    $('mTitle').textContent = title; $('mText').textContent = text || ''; yes.textContent = okLabel;
+    m.hidden = false; no.focus();
+    const done = v => { m.hidden = true; yes.onclick = no.onclick = m.onclick = null; document.removeEventListener('keydown', key); resolve(v); };
+    const key = e => { if (e.key === 'Escape') done(false); };
+    yes.onclick = () => done(true); no.onclick = () => done(false);
+    m.onclick = e => { if (e.target === m) done(false); };
+    document.addEventListener('keydown', key);
+  });
+}
 
 const store = {
   get() { try { return localStorage.getItem('natal_viewer') || ''; } catch { return ''; } }
@@ -143,7 +174,7 @@ $('list').addEventListener('click', async e => {
     $('price').value = i.price || ''; $('note').value = i.note || ''; $('priority').value = i.priority;
     showPrev(); window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-  if (del && confirm('Apagar esta prenda?')) {
+  if (del && await ask('Apagar esta prenda?', 'Esta ação não pode ser desfeita.', 'Apagar')) {
     try { await rpc('admin_delete', { p_token: token, p_id: del }); loadItems(); }
     catch { say('saveMsg', 'Erro ao apagar.', 'err'); }
   }
@@ -192,6 +223,7 @@ $('readBtn').onclick = async () => {
 $('saveBtn').onclick = async () => {
   const title = $('title').value.trim();
   if (!title) return say('saveMsg', 'Falta o nome da prenda.', 'err');
+  if (!await ask(editingId ? 'Guardar as alterações?' : 'Adicionar esta prenda?', `«${title}»`, editingId ? 'Guardar' : 'Adicionar')) return;
   $('saveBtn').disabled = true;
   try {
     await rpc('admin_save', {
