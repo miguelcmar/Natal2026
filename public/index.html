@@ -33,7 +33,13 @@ body{
 }
 #snow{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
 
-header{text-align:center;padding:56px 20px 18px}
+.sleigh{position:absolute;top:6px;left:0;width:100%;height:110px;overflow:hidden;pointer-events:none;z-index:5}
+.sleigh .bob{position:absolute;top:0;left:0;animation:fly 26s linear infinite;will-change:transform}
+.sleigh svg{display:block;animation:bob 2.2s ease-in-out infinite;filter:drop-shadow(0 4px 6px rgba(0,0,0,.35))}
+@keyframes fly{0%{transform:translateX(100vw)}80%,100%{transform:translateX(-360px)}}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(8px) rotate(1deg)}}
+@media (prefers-reduced-motion:reduce){.sleigh{display:none}}
+header{text-align:center;padding:96px 20px 18px}
 .star{color:var(--gold);font-size:1.1rem;letter-spacing:.6em;margin-right:-.6em}
 header h1{font-family:'Dancing Script','Segoe Script',cursive;font-weight:700;font-size:clamp(3.6rem,17vw,6rem);line-height:1;margin:10px 0 0;letter-spacing:0}
 header p{font-family:'Dancing Script','Segoe Script',cursive;font-weight:600;margin:10px 0 0;color:var(--gold);font-size:clamp(1.9rem,8vw,2.8rem);line-height:1.1;letter-spacing:.01em}
@@ -150,6 +156,36 @@ h2.list-title::after{content:"";display:block;width:36px;height:1px;background:v
 <body>
 <canvas id="snow" aria-hidden="true"></canvas>
 
+<div class="sleigh" aria-hidden="true"><div class="bob"><svg viewBox="0 0 330 110" width="330" height="110">
+<g stroke-linecap="round" stroke-linejoin="round" fill="none">
+<!-- renas -->
+<g id="rd">
+<path d="M18 52c8-6 26-6 40 0l6 6c0 8-4 14-8 14H30c-4 0-10-6-12-12z" fill="#8a5a3a" stroke="none"/>
+<path d="M18 52c-4-8-2-16 4-20l8 6" fill="#8a5a3a" stroke="#8a5a3a" stroke-width="6"/>
+<circle cx="16" cy="34" r="7" fill="#8a5a3a" stroke="none"/>
+<circle cx="9" cy="35" r="3" fill="#e0453a" stroke="none"/>
+<path d="M18 28l-3-12m3 6l-8-4m10 4l6-10m-6 6l7-1" stroke="#d9b779" stroke-width="2"/>
+<path d="M26 72l-6 14m12-14l4 14m16-14l-6 12m12-12l8 12" stroke="#6b4328" stroke-width="3.5"/>
+</g>
+<g transform="translate(62 4)"><use href="#rd"/></g>
+<!-- rédeas -->
+<path d="M120 52C150 50 170 56 200 62" stroke="#d9b779" stroke-width="1.6"/>
+<!-- trenó -->
+<path d="M190 58h96c0 18-10 32-30 32h-50c-12 0-20-14-16-32z" fill="#b8433a" stroke="none"/>
+<path d="M186 96c20 4 80 4 108-2 10-2 18-10 20-22" stroke="#d9b779" stroke-width="4"/>
+<path d="M214 96v-8m50 8v-8" stroke="#d9b779" stroke-width="3"/>
+<path d="M190 66h96" stroke="#d9b779" stroke-width="2"/>
+<!-- saco -->
+<path d="M270 58c-4-18 10-26 22-20 8 6 6 16 2 20z" fill="#e8d9b8" stroke="none"/>
+<!-- Pai Natal -->
+<circle cx="236" cy="42" r="14" fill="#c9372c" stroke="none"/>
+<circle cx="236" cy="28" r="8" fill="#f2d2b5" stroke="none"/>
+<path d="M228 31c0 14 16 14 16 0z" fill="#fbf6ee" stroke="none"/>
+<path d="M226 25c0-12 20-16 24-2l-4 4z" fill="#c9372c" stroke="none"/>
+<circle cx="251" cy="21" r="3.5" fill="#fbf6ee" stroke="none"/>
+<path d="M225 26h22" stroke="#fbf6ee" stroke-width="4"/>
+<path d="M222 46c-8 4-12 8-16 12" stroke="#c9372c" stroke-width="6"/>
+</g></svg></div></div>
 <header>
   <div class="star">✦</div>
   <h1>Bom Natal</h1>
