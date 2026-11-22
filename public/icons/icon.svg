@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16402f"/><stop offset="1" stop-color="#0b2119"/></linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0d9a4"/><stop offset="1" stop-color="#c9a15b"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <ellipse cx="256" cy="560" rx="360" ry="120" fill="#f4efe6" opacity=".95"/>
+  <ellipse cx="90" cy="520" rx="170" ry="70" fill="#fffdf8" opacity=".9"/>
+  <path d="M256 92 Q270 220 400 232 Q270 244 256 372 Q242 244 112 232 Q242 220 256 92 Z" fill="url(#gold)"/>
+  <path d="M388 96 Q392 128 420 132 Q392 136 388 168 Q384 136 356 132 Q384 128 388 96 Z" fill="#d9b779" opacity=".9"/>
+  <path d="M132 316 Q135 338 154 341 Q135 344 132 366 Q129 344 110 341 Q129 338 132 316 Z" fill="#d9b779" opacity=".8"/>
+  <g fill="#fff">
+    <circle cx="96" cy="120" r="7" opacity=".9"/><circle cx="170" cy="70" r="4" opacity=".7"/>
+    <circle cx="440" cy="250" r="6" opacity=".8"/><circle cx="60" cy="250" r="4" opacity=".6"/>
+    <circle cx="330" cy="60" r="5" opacity=".8"/><circle cx="450" cy="380" r="4" opacity=".6"/>
+    <circle cx="210" cy="410" r="5" opacity=".5"/><circle cx="300" cy="440" r="3.5" opacity=".6"/>
+    <circle cx="80" cy="420" r="6" opacity=".7"/><circle cx="400" cy="460" r="4" opacity=".7"/>
+    <circle cx="250" cy="30" r="3.5" opacity=".6"/><circle cx="30" cy="40" r="4" opacity=".5"/>
+  </g>
+</svg>
