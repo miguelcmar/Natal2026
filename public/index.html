@@ -119,7 +119,6 @@ h2.list-title::after{content:"";display:block;width:36px;height:1px;background:v
 .img img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
 .body{padding:14px 14px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
 .title{font-family:var(--serif);font-weight:600;font-size:1.08rem;line-height:1.25}
-.price{color:var(--green);font-weight:600}
 .small{font-size:.85rem}
 .card .small{color:var(--muted)}
 .badge{align-self:flex-start;font-size:.72rem;letter-spacing:.04em;background:#f6ead0;color:#7a5a1c;border-radius:999px;padding:3px 10px}
@@ -226,8 +225,6 @@ if (new URLSearchParams(location.search).has('reset')) { store.del(); history.re
 let viewer = store.get();
 let state = null;
 let tab = null;        // 'natalia' | 'miguel' | 'mine'
-let filt = 'all';      // filtro de preco
-let sortBy = 'none';   // ordenacao
 let onlyFree = false;  // mostrar so as prendas ainda disponiveis
 const seed = Math.random();
 
@@ -290,41 +287,8 @@ function howHtml() {
   </ul><p class="anon">🤫 Todas as reservas são anónimas.</p></section>`;
 }
 
-/* ---------- preco ---------- */
-function priceNum(s) {
-  const m = String(s || '').match(/\d[\d.,\s]*/);
-  if (!m) return null;
-  let t = m[0].replace(/\s+/g, '').replace(/[.,]+$/, '');
-  const dots = (t.match(/\./g) || []).length, commas = (t.match(/,/g) || []).length;
-  if (dots && commas) {
-    const dec = t.lastIndexOf(',') > t.lastIndexOf('.') ? ',' : '.';
-    const th = dec === ',' ? '.' : ',';
-    t = t.split(th).join('').replace(dec, '.');
-  } else if (commas) {
-    t = commas === 1 && /,\d{1,2}$/.test(t) ? t.replace(',', '.') : t.split(',').join('');
-  } else if (dots) {
-    t = dots === 1 && !/^\d{1,3}\.\d{3}$/.test(t) ? t : t.split('.').join('');
-  }
-  const n = parseFloat(t);
-  return Number.isFinite(n) ? n : null;
-}
-const BUCKETS = [
-  { id: 'all', label: 'Todos' },
-  { id: 'b1', label: 'Até 25 €', ok: p => p <= 25 },
-  { id: 'b2', label: '25 – 50 €', ok: p => p > 25 && p <= 50 },
-  { id: 'b3', label: '50 – 100 €', ok: p => p > 50 && p <= 100 },
-  { id: 'b4', label: 'Mais de 100 €', ok: p => p > 100 }
-];
 function applyFilters(items) {
-  const b = BUCKETS.find(x => x.id === filt);
-  let out = items.map(i => ({ i, p: null }));
-  if (onlyFree) out = out.filter(x => !x.i.reserved && !x.i.mine);
-  if (b && b.ok) out = out.filter(x => x.p != null && b.ok(x.p));
-  if (sortBy !== 'none') {
-    const k = sortBy === 'asc' ? 1 : -1;
-    out.sort((a, b2) => (a.p == null) - (b2.p == null) || (a.p == null ? 0 : (a.p - b2.p) * k));
-  }
-  return out.map(x => x.i);
+  return onlyFree ? items.filter(i => !i.reserved && !i.mine) : items;
 }
 
 /* ---------- janela de confirmacao / aviso ---------- */
@@ -483,7 +447,6 @@ app.addEventListener('click', async e => {
   if (t.dataset.pick) { viewer = t.dataset.pick; store.set(viewer); return load(); }
   if (t.id === 'refresh') return load();
   if (t.dataset.free) { onlyFree = !onlyFree; return render(); }
-  if (t.dataset.filter) { filt = t.dataset.filter; return render(); }
   if (t.dataset.tab) { tab = t.dataset.tab; return render(); }
 
   const rid = t.dataset.reserve, uid = t.dataset.undo;
@@ -504,7 +467,6 @@ app.addEventListener('click', async e => {
   } catch { await tell('Não foi possível guardar', 'Tenta outra vez daqui a pouco.'); }
   load();
 });
-app.addEventListener('change', e => { if (e.target.id === 'sort') { sortBy = e.target.value; render(); } });
 
 document.addEventListener('visibilitychange', () => { if (!document.hidden && viewer && state) load(true); });
 // atualiza sozinho, para ninguem reservar o que outra pessoa acabou de reservar
