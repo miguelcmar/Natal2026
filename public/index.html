@@ -398,7 +398,7 @@ function card(it) {
 function render() {
   const me = state.viewer; // 'miguel' | 'natalia' | null
   const mine = state.items.filter(i => i.mine);
-  if (!tab) tab = me === 'natalia' ? 'miguel' : 'natalia'; // abre na carta da outra pessoa
+  if (!tab) tab = me === 'miguel' ? 'natalia' : 'miguel'; // abre na carta do Miguel (o Miguel abre na da Natália)
   let html = '';
   html += welcomeHtml();
   html += `<div class="tabs">
