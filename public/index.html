@@ -368,6 +368,7 @@ async function load(silent = false) {
 
 function card(it) {
   const link = safeUrl(it.url);
+  const link2 = safeUrl(it.url2);
   const img = safeUrl(it.image_url);
   let status = '', action = '';
   if (it.mine) {
@@ -389,6 +390,7 @@ function card(it) {
         ${status}
         <div class="actions">
           ${link ? `<a href="${esc(link)}" target="_blank" rel="noopener noreferrer">Ver na loja ↗</a>` : ''}
+          ${link2 ? `<a href="${esc(link2)}" target="_blank" rel="noopener noreferrer">Ver segunda opção ↗</a>` : ''}
           ${action}
         </div>
       </div>

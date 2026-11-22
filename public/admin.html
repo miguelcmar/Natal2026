@@ -68,6 +68,8 @@ button:disabled{opacity:.5}
       <button class="sec" id="readBtn" type="button">Ler link</button>
     </div>
     <div class="msg" id="readMsg"></div>
+    <label for="link2">Segundo link (opcional)</label>
+    <input id="link2" type="url" inputmode="url" placeholder="https://...">
 
     <label for="title">Nome da prenda</label>
     <input id="title">
@@ -165,7 +167,7 @@ $('list').addEventListener('click', async e => {
     const i = items.find(x => x.id === ed);
     editingId = i.id;
     $('formTitle').textContent = 'Editar prenda';
-    $('link').value = i.url || ''; $('title').value = i.title || ''; $('image').value = i.image_url || '';
+    $('link').value = i.url || ''; $('link2').value = i.url2 || ''; $('title').value = i.title || ''; $('image').value = i.image_url || '';
     $('note').value = i.note || '';
     showPrev(); window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -184,7 +186,7 @@ $('image').oninput = showPrev;
 function clearForm() {
   editingId = null;
   $('formTitle').textContent = 'Nova prenda';
-  for (const id of ['link', 'title', 'image', 'note']) $(id).value = '';
+  for (const id of ['link', 'link2', 'title', 'image', 'note']) $(id).value = '';
   showPrev(); say('readMsg', ''); say('saveMsg', '');
 }
 $('cancelBtn').onclick = clearForm;
@@ -222,7 +224,7 @@ $('saveBtn').onclick = async () => {
   $('saveBtn').disabled = true;
   try {
     await rpc('admin_save', {
-      p_token: token, p_id: editingId, p_title: title, p_url: $('link').value, p_image: $('image').value,
+      p_token: token, p_id: editingId, p_title: title, p_url: $('link').value, p_url2: $('link2').value, p_image: $('image').value,
       p_price: '', p_note: $('note').value, p_priority: 0, p_quantity: 1
     });
     clearForm(); say('saveMsg', 'Guardado ✓', 'ok'); loadItems();
