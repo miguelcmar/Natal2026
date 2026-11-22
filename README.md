@@ -1,1 +1,26 @@
-# Natal2026
+# Natal Miguel & Natália
+
+Site de cartas de Natal com reservas anónimas, sem passwords.
+
+- `public/index.html`: página da família. Na primeira vez escolhem quem são; fica guardado nesse browser.
+- `public/admin.html`: área para adicionar/editar prendas (link pessoal, abre-se uma vez).
+- `functions/api/preview.js`: lê título, imagem e preço de um link de loja (só com o link de admin).
+
+A base de dados (Supabase, projeto `natal-2026`) já está criada e testada.
+
+## 1. GitHub
+Cria um repositório e faz upload mantendo as pastas `public/` e `functions/`.
+
+## 2. Cloudflare Pages
+Workers & Pages → Create → Pages → Connect to Git → o repositório.
+Framework preset: **None** · Build command: **vazio** · Build output directory: **public**.
+
+## Uso
+- Família: enviar só o endereço do site. Cada pessoa escolhe o nome na primeira vez.
+- Se alguém escolher o nome errado: abrir o endereço com `?reset` no fim (ex.: `https://NOME.pages.dev/?reset`).
+- Miguel e Natália: abrir uma vez o link pessoal de admin (em cada aparelho). Depois basta `/admin.html`.
+
+## Privacidade
+- A base de dados nem envia as reservas da própria lista de quem escolheu "Miguel" ou "Natália".
+- É um sistema de confiança: quem escolher o nome de outra pessoa vê o que essa pessoa veria.
+- O link de admin é secreto: não o partilhar.

@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Admin · Natal</title>
+<style>
+:root{--red:#b3262e;--green:#1f5a3f;--cream:#fbf6ee;--ink:#2a2420;--muted:#7a6f66;--card:#fff;--line:#eadfce}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--cream);color:var(--ink);line-height:1.4}
+header{background:var(--green);color:#fff;padding:18px 16px;text-align:center}
+header h1{margin:0;font-size:1.3rem}
+main{max-width:760px;margin:0 auto;padding:16px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:16px 0}
+label{display:block;font-size:.85rem;color:var(--muted);margin:10px 0 4px}
+input,select{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;font:inherit;background:#fff}
+button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:10px 14px;background:var(--red);color:#fff;font-weight:600}
+button.sec{background:var(--green)}
+button.ghost{background:transparent;color:var(--muted);font-weight:400;text-decoration:underline;padding:4px}
+button:disabled{opacity:.5}
+.row{display:flex;gap:8px}
+.row>*{flex:1}
+.row>button{flex:0 0 auto}
+.msg{font-size:.9rem;min-height:1.2em;margin-top:8px}
+.msg.err{color:var(--red)}
+.msg.ok{color:var(--green)}
+.hint{background:#fff4d6;border:1px solid #f0dca0;border-radius:10px;padding:10px 12px;font-size:.85rem;margin-top:10px}
+.preview{margin-top:10px;max-height:160px;max-width:100%;border-radius:8px;border:1px solid var(--line);background:#fff}
+.item{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.item img,.item .ph{width:56px;height:56px;object-fit:contain;border-radius:8px;background:#f2ebdf;flex:0 0 56px;display:flex;align-items:center;justify-content:center}
+.item .t{flex:1;min-width:0}
+.item .t b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .t span{font-size:.85rem;color:var(--muted)}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<header><h1>🎄 Admin · Natal</h1></header>
+<main>
+
+<section id="denied" class="box hidden">
+  <b>Sem acesso.</b>
+  <p>Abre o teu link pessoal de admin (o que o Miguel te enviou). Só precisas de o abrir uma vez em cada telemóvel ou computador.</p>
+</section>
+
+<section id="app" class="hidden">
+  <b id="who"></b>
+  <div class="hint">Aqui não aparece o estado das reservas, para manteres a surpresa. 🤫</div>
+
+  <div class="box">
+    <b id="formTitle">Nova prenda</b>
+    <label for="link">Link da loja</label>
+    <div class="row">
+      <input id="link" type="url" inputmode="url" placeholder="https://...">
+      <button class="sec" id="readBtn" type="button">Ler link</button>
+    </div>
+    <div class="msg" id="readMsg"></div>
+
+    <label for="title">Nome da prenda</label>
+    <input id="title">
+    <label for="image">Imagem (endereço da imagem)</label>
+    <input id="image" type="url" inputmode="url">
+    <img id="prev" class="preview hidden" alt="">
+    <div class="row">
+      <div><label for="price">Preço</label><input id="price" placeholder="ex: 39,90 €"></div>
+      <div><label for="priority">Prioridade</label>
+        <select id="priority"><option value="0">Normal</option><option value="1">Gostava muito</option><option value="2">Sonho ⭐</option></select>
+      </div>
+    </div>
+    <label for="note">Nota (tamanho, cor...)</label>
+    <input id="note">
+    <div class="msg" id="saveMsg"></div>
+    <div class="row" style="margin-top:8px">
+      <button id="saveBtn" type="button">Guardar prenda</button>
+      <button class="ghost" id="cancelBtn" type="button" style="flex:0 0 auto">limpar</button>
+    </div>
+  </div>
+
+  <div class="box">
+    <b>A minha lista</b>
+    <div id="list"></div>
+  </div>
+</section>
+</main>
+
+<script>
+const SB_URL = 'https://stonleipysdlaprwowec.supabase.co';
+const SB_KEY = 'sb_publishable_UqaAv23czfi1xo9OiiB-IA_d0-0Hbwa';
+const NAMES = { miguel: 'Miguel', natalia: 'Natália' };
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let token = '', owner = null, items = [], editingId = null;
+
+const store = {
+  get() { try { return localStorage.getItem('natal_admin') || ''; } catch { return ''; } },
+  set(v) { try { localStorage.setItem('natal_admin', v); } catch {} }
+};
+
+async function rpc(fn, args) {
+  const r = await fetch(`${SB_URL}/rest/v1/rpc/${fn}`, {
+    method: 'POST',
+    headers: { apikey: SB_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify(args || {})
+  });
+  if (!r.ok) { const e = new Error('rpc'); e.status = r.status; throw e; }
+  return r.json();
+}
+function say(id, text, cls = '') { const el = $(id); el.textContent = text; el.className = 'msg ' + cls; }
+
+async function start() {
+  // primeira vez: o token vem no link (depois do #) e fica guardado neste aparelho
+  const m = location.hash.match(/t=([0-9a-f]+)/i);
+  if (m) { store.set(m[1]); history.replaceState(null, '', location.pathname); }
+  token = store.get();
+  if (!token) return $('denied').classList.remove('hidden');
+  try { owner = await rpc('admin_whoami', { p_token: token }); }
+  catch { return $('denied').classList.remove('hidden'); }
+  $('who').textContent = 'Lista ' + (owner === 'natalia' ? 'da ' : 'do ') + (NAMES[owner] || owner);
+  $('app').classList.remove('hidden');
+  loadItems();
+}
+
+async function loadItems() {
+  try { items = await rpc('admin_list', { p_token: token }); }
+  catch { return say('saveMsg', 'Erro ao carregar a lista.', 'err'); }
+  $('list').innerHTML = items.length ? items.map(i => `
+    <div class="item">
+      ${i.image_url ? `<img src="${esc(i.image_url)}" alt="" referrerpolicy="no-referrer">` : '<div class="ph">🎁</div>'}
+      <div class="t"><b>${esc(i.title)}</b><span>${esc(i.price || '')}</span></div>
+      <button class="ghost" data-edit="${i.id}">editar</button>
+      <button class="ghost" data-del="${i.id}">apagar</button>
+    </div>`).join('') : '<p style="color:var(--muted)">Ainda sem prendas.</p>';
+}
+
+$('list').addEventListener('click', async e => {
+  const ed = e.target.dataset.edit, del = e.target.dataset.del;
+  if (ed) {
+    const i = items.find(x => x.id === ed);
+    editingId = i.id;
+    $('formTitle').textContent = 'Editar prenda';
+    $('link').value = i.url || ''; $('title').value = i.title || ''; $('image').value = i.image_url || '';
+    $('price').value = i.price || ''; $('note').value = i.note || ''; $('priority').value = i.priority;
+    showPrev(); window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  if (del && confirm('Apagar esta prenda?')) {
+    try { await rpc('admin_delete', { p_token: token, p_id: del }); loadItems(); }
+    catch { say('saveMsg', 'Erro ao apagar.', 'err'); }
+  }
+});
+
+function showPrev() {
+  const v = $('image').value.trim();
+  if (v) { $('prev').src = v; $('prev').classList.remove('hidden'); } else $('prev').classList.add('hidden');
+}
+$('image').oninput = showPrev;
+
+function clearForm() {
+  editingId = null;
+  $('formTitle').textContent = 'Nova prenda';
+  for (const id of ['link', 'title', 'image', 'price', 'note']) $(id).value = '';
+  $('priority').value = '0'; showPrev(); say('readMsg', ''); say('saveMsg', '');
+}
+$('cancelBtn').onclick = clearForm;
+
+$('readBtn').onclick = async () => {
+  const link = $('link').value.trim();
+  if (!link) return say('readMsg', 'Cola primeiro o link da loja.', 'err');
+  say('readMsg', 'A ler o link...');
+  $('readBtn').disabled = true;
+  try {
+    const r = await fetch('/api/preview?url=' + encodeURIComponent(link), {
+      headers: { 'X-Admin-Token': token }
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || 'erro');
+    if (d.title) $('title').value = d.title;
+    if (d.image) $('image').value = d.image;
+    if (d.price) $('price').value = d.price;
+    if (d.url) $('link').value = d.url;
+    showPrev();
+    const missing = ['title', 'image', 'price'].filter(k => !d[k]);
+    say('readMsg', missing.length
+      ? 'Li o que consegui. Falta preencher: ' + missing.map(k => ({ title: 'nome', image: 'imagem', price: 'preço' }[k])).join(', ') + '.'
+      : 'Pronto! Confirma os dados e guarda.', missing.length ? '' : 'ok');
+  } catch {
+    say('readMsg', 'Não consegui ler este link. Preenche à mão.', 'err');
+  }
+  $('readBtn').disabled = false;
+};
+
+$('saveBtn').onclick = async () => {
+  const title = $('title').value.trim();
+  if (!title) return say('saveMsg', 'Falta o nome da prenda.', 'err');
+  $('saveBtn').disabled = true;
+  try {
+    await rpc('admin_save', {
+      p_token: token, p_id: editingId, p_title: title, p_url: $('link').value, p_image: $('image').value,
+      p_price: $('price').value, p_note: $('note').value, p_priority: parseInt($('priority').value, 10)
+    });
+    clearForm(); say('saveMsg', 'Guardado ✓', 'ok'); loadItems();
+  } catch { say('saveMsg', 'Erro ao guardar.', 'err'); }
+  $('saveBtn').disabled = false;
+};
+
+start();
+</script>
+</body>
+</html>

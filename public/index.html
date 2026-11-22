@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0e2a21">
+<title>Natal Miguel &amp; Natália</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#0e2a21; --night-2:#143a2d;
+  --cream:#fbf6ee; --paper:#fffdf8; --ink:#2b2622; --muted:#85796e;
+  --red:#b8433a; --red-d:#9c342c; --green:#1f5a3f; --gold:#d9b779; --line:rgba(255,255,255,.14);
+  --serif:'Fraunces',Georgia,'Times New Roman',serif;
+  --sans:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+html{background:var(--night)}
+body{
+  margin:0; min-height:100vh; color:var(--cream); font-family:var(--sans); line-height:1.45;
+  background:linear-gradient(180deg,var(--night) 0%,var(--night-2) 100%) fixed;
+  -webkit-font-smoothing:antialiased;
+}
+#snow{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+
+header{text-align:center;padding:56px 20px 18px}
+.star{color:var(--gold);font-size:1.1rem;letter-spacing:.6em;margin-right:-.6em}
+header h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.4rem,9vw,3.6rem);margin:10px 0 0;letter-spacing:.01em}
+header p{margin:8px 0 0;color:rgba(251,246,238,.65);font-size:.95rem;letter-spacing:.18em;text-transform:uppercase}
+.rule{width:56px;height:1px;background:var(--gold);margin:22px auto 0;opacity:.7}
+
+main{max-width:940px;margin:0 auto;padding:8px 18px 64px;position:relative;z-index:1}
+
+/* escolher quem es */
+.box{background:var(--paper);color:var(--ink);border-radius:20px;padding:28px 22px;max-width:400px;margin:28px auto;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.28)}
+.box h2{font-family:var(--serif);font-weight:600;font-size:1.5rem;margin:0;color:var(--ink)}
+.box .small{color:var(--muted)}
+.who{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+
+button{font:inherit;cursor:pointer;border:0;border-radius:999px;padding:12px 18px;background:var(--red);color:#fff;font-weight:600;transition:background .15s,transform .05s}
+button:hover{background:var(--red-d)}
+button:active{transform:scale(.98)}
+button:disabled{opacity:.5}
+button.choice{background:#fff;color:var(--ink);border:1px solid #e6dccb;font-weight:500;font-size:1.02rem}
+button.choice:hover{background:#f6efe3;border-color:var(--gold)}
+button.ghost{background:transparent;color:inherit;font-weight:400;text-decoration:underline;padding:4px 6px;opacity:.75}
+button.ghost:hover{background:transparent;opacity:1}
+
+.top{display:flex;justify-content:space-between;align-items:center;font-size:.85rem;color:rgba(251,246,238,.6);margin:6px 0 0}
+.top button.ghost{color:rgba(251,246,238,.8)}
+
+h2.list-title{font-family:var(--serif);font-weight:400;font-size:clamp(1.5rem,5vw,2rem);margin:44px 0 6px;text-align:center}
+h2.list-title::after{content:"";display:block;width:36px;height:1px;background:var(--gold);margin:14px auto 0;opacity:.7}
+.note{max-width:460px;margin:14px auto 4px;text-align:center;font-size:.9rem;color:rgba(251,246,238,.75);border:1px solid var(--line);border-radius:14px;padding:10px 14px;background:rgba(255,255,255,.05)}
+.empty{text-align:center;color:rgba(251,246,238,.6);margin:18px 0}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-top:22px}
+.card{background:var(--paper);color:var(--ink);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 10px 30px rgba(0,0,0,.22)}
+.card.done{opacity:.55}
+.img{aspect-ratio:4/3;background:#fff;display:flex;align-items:center;justify-content:center;font-size:2.4rem;border-bottom:1px solid #f0e8da}
+.img img{width:100%;height:100%;object-fit:contain}
+.body{padding:14px 14px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+.title{font-family:var(--serif);font-weight:600;font-size:1.08rem;line-height:1.25}
+.price{color:var(--green);font-weight:600}
+.small{font-size:.85rem}
+.card .small{color:var(--muted)}
+.badge{align-self:flex-start;font-size:.72rem;letter-spacing:.04em;background:#f6ead0;color:#7a5a1c;border-radius:999px;padding:3px 10px}
+.actions{margin-top:auto;display:flex;flex-direction:column;gap:8px;padding-top:8px}
+.actions a{color:var(--green);font-weight:600;font-size:.9rem;text-decoration:none}
+.actions a:hover{text-decoration:underline}
+.reserved{color:var(--green);font-weight:600;font-size:.95rem}
+.reserved .ghost{color:var(--muted);font-weight:400;font-size:.85rem}
+
+@media (prefers-reduced-motion: reduce){ button{transition:none} }
+</style>
+</head>
+<body>
+<canvas id="snow" aria-hidden="true"></canvas>
+
+<header>
+  <div class="star">✦</div>
+  <h1>Natal</h1>
+  <p>Miguel &amp; Natália</p>
+  <div class="rule"></div>
+</header>
+<main id="app"></main>
+
+<script>
+const SB_URL = 'https://stonleipysdlaprwowec.supabase.co';
+const SB_KEY = 'sb_publishable_UqaAv23czfi1xo9OiiB-IA_d0-0Hbwa';
+const NAMES = { miguel: 'Miguel', natalia: 'Natália' };
+const app = document.getElementById('app');
+const store = {
+  get() { try { return localStorage.getItem('natal_viewer') || ''; } catch { return ''; } },
+  set(v) { try { localStorage.setItem('natal_viewer', v); } catch {} },
+  del() { try { localStorage.removeItem('natal_viewer'); } catch {} }
+};
+
+// link de emergencia para quem escolheu a pessoa errada: acrescentar ?reset ao endereco
+if (new URLSearchParams(location.search).has('reset')) { store.del(); history.replaceState(null, '', location.pathname); }
+
+let viewer = store.get();
+let state = null;
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const safeUrl = u => { try { const x = new URL(u); return /^https?:$/.test(x.protocol) ? x.href : ''; } catch { return ''; } };
+
+async function rpc(fn, args) {
+  const r = await fetch(`${SB_URL}/rest/v1/rpc/${fn}`, {
+    method: 'POST',
+    headers: { apikey: SB_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify(args || {})
+  });
+  if (!r.ok) { const e = new Error('rpc'); e.status = r.status; throw e; }
+  return r.json();
+}
+
+const offline = () => {
+  app.innerHTML = `<div class="box"><p>Sem ligação.</p><button id="retry">Tentar outra vez</button></div>`;
+  document.getElementById('retry').onclick = () => (viewer ? load() : renderPicker());
+};
+
+async function renderPicker() {
+  app.innerHTML = `<div class="box"><p class="small">A carregar…</p></div>`;
+  let list;
+  try { list = await rpc('get_viewers'); } catch { return offline(); }
+  app.innerHTML = `
+    <div class="box">
+      <h2>Quem és tu?</h2>
+      <p class="small">Escolhe o teu nome. Só perguntamos esta vez: fica guardado neste aparelho.</p>
+      <div class="who">${list.map(v => `<button class="choice" data-pick="${esc(v.id)}">${esc(v.label)}</button>`).join('')}</div>
+    </div>`;
+}
+
+async function load() {
+  try {
+    state = await rpc('get_lists', { p_viewer: viewer });
+    render();
+  } catch (e) {
+    if (e.status === 400 || e.status === 401 || e.status === 403) { store.del(); viewer = ''; renderPicker(); }
+    else if (!state) offline();
+  }
+}
+
+function card(it) {
+  const link = safeUrl(it.url);
+  const img = safeUrl(it.image_url);
+  let action = '';
+  if (!it.own) {
+    action = it.reserved
+      ? `<div class="reserved">Reservado ✓ <button class="ghost" data-undo="${it.id}">desfazer</button></div>`
+      : `<button data-reserve="${it.id}">Vou comprar este</button>`;
+  }
+  return `
+    <div class="card ${it.reserved && !it.own ? 'done' : ''}">
+      <div class="img">${img ? `<img src="${esc(img)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : '🎁'}</div>
+      <div class="body">
+        ${it.priority >= 2 ? '<span class="badge">✦ Sonho</span>' : it.priority === 1 ? '<span class="badge">Gostava muito</span>' : ''}
+        <div class="title">${esc(it.title)}</div>
+        ${it.price ? `<div class="price">${esc(it.price)}</div>` : ''}
+        ${it.note ? `<div class="small">${esc(it.note)}</div>` : ''}
+        <div class="actions">
+          ${link ? `<a href="${esc(link)}" target="_blank" rel="noopener noreferrer">Ver na loja ↗</a>` : ''}
+          ${action}
+        </div>
+      </div>
+    </div>`;
+}
+
+function render() {
+  const me = state.viewer; // 'miguel' | 'natalia' | null
+  const order = ['natalia', 'miguel'].sort((a, b) => (a === me) - (b === me));
+  let html = `<div class="top"><span>Todas as reservas são anónimas</span>
+    <button class="ghost" id="refresh">atualizar</button></div>`;
+  for (const owner of order) {
+    const items = state.items.filter(i => i.owner === owner);
+    html += `<h2 class="list-title">Carta de Natal ${owner === 'natalia' ? 'da' : 'do'} ${NAMES[owner]}</h2>`;
+    if (owner === me) html += `<div class="note">Esta é a tua carta. Para manter a surpresa, não mostramos o que já foi reservado. 🤫</div>`;
+    html += items.length
+      ? `<div class="grid">${items.map(card).join('')}</div>`
+      : `<p class="empty">Ainda sem prendas.</p>`;
+  }
+  app.innerHTML = html;
+}
+
+app.addEventListener('click', async e => {
+  const t = e.target;
+  if (t.dataset.pick) { viewer = t.dataset.pick; store.set(viewer); return load(); }
+  if (t.id === 'refresh') return load();
+  const rid = t.dataset.reserve, uid = t.dataset.undo;
+  if (!rid && !uid) return;
+  if (uid && !confirm('Desfazer a reserva desta prenda?')) return;
+  t.disabled = true;
+  try {
+    const ok = await rpc('reserve_item', { p_viewer: viewer, p_item_id: rid || uid, p_reserve: !!rid });
+    if (rid && !ok) alert('Alguém acabou de reservar esta prenda.');
+  } catch { alert('Não foi possível guardar. Tenta outra vez.'); }
+  await load();
+});
+
+document.addEventListener('visibilitychange', () => { if (!document.hidden && viewer && state) load(); });
+
+if (viewer) load(); else renderPicker();
+
+/* ---------- neve ---------- */
+(function snow() {
+  const canvas = document.getElementById('snow');
+  const ctx = canvas.getContext('2d');
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let w = 0, h = 0, dpr = 1, flakes = [], sprites = [], last = 0, raf = 0;
+
+  function sprite(r) {
+    const size = r * 4, px = Math.ceil(size * dpr);
+    const o = document.createElement('canvas'); o.width = o.height = px;
+    const g = o.getContext('2d');
+    const grd = g.createRadialGradient(px / 2, px / 2, 0, px / 2, px / 2, px / 2);
+    grd.addColorStop(0, 'rgba(255,255,255,1)');
+    grd.addColorStop(0.35, 'rgba(255,255,255,.85)');
+    grd.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = grd; g.fillRect(0, 0, px, px);
+    return { img: o, size };
+  }
+
+  function setup() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    w = innerWidth; h = innerHeight;
+    canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    sprites = [1.6, 2.6, 3.8].map(sprite);
+    const n = Math.min(170, Math.round((w * h) / 6500));
+    flakes = Array.from({ length: n }, () => {
+      const k = Math.random();
+      const s = k < 0.55 ? 0 : k < 0.88 ? 1 : 2;      // mais flocos pequenos que grandes
+      return {
+        s, x: Math.random() * w, y: Math.random() * h,
+        vy: 16 + s * 14 + Math.random() * 14,          // px/s (os grandes caem mais depressa)
+        sway: 8 + Math.random() * 18, ph: Math.random() * 6.28, fr: 0.4 + Math.random() * 0.6,
+        a: 0.45 + s * 0.2 + Math.random() * 0.15
+      };
+    });
+  }
+
+  function draw(t) {
+    ctx.clearRect(0, 0, w, h);
+    for (const f of flakes) {
+      const sp = sprites[f.s];
+      ctx.globalAlpha = Math.min(f.a, 1);
+      ctx.drawImage(sp.img, f.x - sp.size / 2, f.y - sp.size / 2, sp.size, sp.size);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function tick(now) {
+    raf = requestAnimationFrame(tick);
+    const dt = Math.min((now - last) / 1000 || 0, 0.05); last = now;
+    for (const f of flakes) {
+      f.y += f.vy * dt;
+      f.x += Math.sin(now / 1000 * f.fr + f.ph) * f.sway * dt;
+      if (f.y > h + 8) { f.y = -8; f.x = Math.random() * w; }
+      if (f.x < -10) f.x = w + 10; else if (f.x > w + 10) f.x = -10;
+    }
+    draw(now);
+  }
+
+  function start() { cancelAnimationFrame(raf); last = performance.now(); if (still) draw(0); else raf = requestAnimationFrame(tick); }
+
+  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { setup(); start(); }, 150); });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) cancelAnimationFrame(raf); else start(); });
+  setup(); start();
+})();
+</script>
+</body>
+</html>
