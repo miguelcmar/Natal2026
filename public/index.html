@@ -237,8 +237,8 @@ function welcomeHtml() {
   const w = WELCOME[viewer];
   const name = w ? w.name : '';
   const msg = w ? w.msgs[Math.floor(seed * w.msgs.length)] : 'Espreita as cartas e reserva uma prenda. O segredo fica entre nós. 🤫';
-  return `<section class="welcome"><div class="emoji">🎅</div>
-    <h2>Ho ho ho${name ? ', ' + esc(name) : ''}!</h2><p>${esc(msg)}</p>
+  return `<section class="welcome">
+    <h2>Ho ho ho!</h2><p>${esc(msg)}</p>
     <hr class="wsep">
     <p class="wish">Neste Natal desejamos-vos uma mesa cheia, um sofá sempre com lugar e muito pouco trânsito no centro comercial. Que não falte chocolate quente, rabanadas (sem contar quantas) nem boa disposição, e que o Pai Natal vos traga tudo o que pediram, mesmo o que se portaram mal para merecer. 🎄✨</p>
     <p class="sign">Feliz Natal a todos! 🎁<br><b>Miguel &amp; Natália</b></p></section>`;
