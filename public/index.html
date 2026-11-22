@@ -350,12 +350,9 @@ function card(it) {
   if (it.own) {
     if (q > 1) status = `<div class="small">Quantidade: ${q}</div>`;
   } else if (it.mine) {
-    const bought = it.mine_status === 'bought';
-    status = `<div class="reserved">${bought ? 'Comprado por ti ✓' : 'Reservado por ti ✓'}</div>`
+    status = `<div class="reserved">Reservado por ti ✓</div>`
       + (q > 1 ? `<div class="small">${it.taken} de ${q} reservadas</div>` : '');
-    action = `<div class="row">
-        <button class="soft" data-bought="${it.id}" data-to="${bought ? '0' : '1'}">${bought ? 'Ainda não comprei' : 'Já comprei'}</button>
-        <button class="ghost" data-undo="${it.id}">desfazer reserva</button></div>`;
+    action = `<div class="row"><button class="ghost" data-undo="${it.id}">desfazer reserva</button></div>`;
   } else if (it.reserved) {
     status = `<div class="reserved">${q > 1 ? 'Todas reservadas ✓' : 'Reservado ✓'}</div>`;
   } else {
@@ -395,7 +392,7 @@ function render() {
 
   if (tab === 'mine') {
     html += `<h2 class="list-title">As minhas reservas</h2>
-      <div class="note">Só tu vês esta lista. Carrega em «Já comprei» quando tiveres a prenda, para te organizares.</div>`;
+      <div class="note">Só tu vês esta lista: as prendas que reservaste.</div>`;
     html += mine.length
       ? `<div class="grid">${mine.map(card).join('')}</div>`
       : `<p class="empty">Ainda não reservaste nenhuma prenda.</p>`;
@@ -435,21 +432,9 @@ app.addEventListener('click', async e => {
   if (t.dataset.filter) { filt = t.dataset.filter; return render(); }
   if (t.dataset.tab) { tab = t.dataset.tab; return render(); }
 
-  const rid = t.dataset.reserve, uid = t.dataset.undo, bid = t.dataset.bought;
-  if (!rid && !uid && !bid) return;
-  const id = rid || uid || bid, name = titleOf(id);
-
-  if (bid) {
-    const to = t.dataset.to === '1';
-    const ok = to
-      ? await ask('Já compraste?', `${name} fica marcada como comprada.`, 'Sim, já comprei')
-      : await ask('Ainda não compraste?', `${name} volta a ficar só reservada.`, 'Voltar a reservada');
-    if (!ok) return;
-    t.disabled = true;
-    try { await rpc('mark_bought', { p_viewer: viewer, p_item_id: id, p_bought: to }); }
-    catch { await tell('Não foi possível guardar', 'Tenta outra vez daqui a pouco.'); }
-    return load();
-  }
+  const rid = t.dataset.reserve, uid = t.dataset.undo;
+  if (!rid && !uid) return;
+  const id = rid || uid, name = titleOf(id);
 
   const ok = rid
     ? await ask('Reservar esta prenda?', `${name} fica marcada como reservada, sem mostrar o teu nome, para ninguém comprar o mesmo.`, 'Reservar')
