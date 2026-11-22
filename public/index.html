@@ -31,8 +31,9 @@ header{text-align:center;padding:56px 20px 18px}
 header h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.4rem,9vw,3.6rem);margin:10px 0 0;letter-spacing:.01em}
 header p{margin:8px 0 0;color:rgba(251,246,238,.65);font-size:.95rem;letter-spacing:.18em;text-transform:uppercase}
 .rule{width:56px;height:1px;background:var(--gold);margin:22px auto 0;opacity:.7}
+.count{display:inline-block;margin-top:18px;font-size:.92rem;color:var(--gold);border:1px solid rgba(217,183,121,.45);border-radius:999px;padding:6px 16px;background:rgba(255,255,255,.04)}
 
-main{max-width:940px;margin:0 auto;padding:8px 18px 64px;position:relative;z-index:1}
+main{max-width:940px;margin:0 auto;padding:8px 18px 90px;position:relative;z-index:1}
 
 /* escolher quem es */
 .box{background:var(--paper);color:var(--ink);border-radius:20px;padding:28px 22px;max-width:400px;margin:28px auto;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.28)}
@@ -48,6 +49,8 @@ button.choice{background:#fff;color:var(--ink);border:1px solid #e6dccb;font-wei
 button.choice:hover{background:#f6efe3;border-color:var(--gold)}
 button.ghost{background:transparent;color:inherit;font-weight:400;text-decoration:underline;padding:4px 6px;opacity:.75}
 button.ghost:hover{background:transparent;opacity:1}
+button.soft{background:#e7f0e9;color:var(--green)}
+button.soft:hover{background:#d8e8dc}
 
 .top{display:flex;justify-content:space-between;align-items:center;font-size:.85rem;color:rgba(251,246,238,.6);margin:6px 0 0}
 .top button.ghost{color:rgba(251,246,238,.8)}
@@ -59,8 +62,15 @@ button.ghost:hover{background:transparent;opacity:1}
 .welcome h2{font-family:var(--serif);font-weight:600;font-size:clamp(1.4rem,5vw,1.8rem);margin:10px 0 8px}
 .welcome p{margin:0;color:rgba(251,246,238,.88);font-size:1.02rem}
 
+/* separadores */
+.tabs{display:flex;justify-content:center;gap:8px;margin:26px 0 0}
+.tab{background:transparent;color:rgba(251,246,238,.75);border:1px solid var(--line);padding:9px 18px;font-weight:500}
+.tab:hover{background:rgba(255,255,255,.1)}
+.tab.on{background:var(--cream);color:var(--night);border-color:var(--cream)}
+.tab .n{display:inline-block;min-width:20px;margin-left:6px;padding:0 6px;border-radius:999px;background:var(--gold);color:#2b2316;font-size:.78rem;line-height:20px}
+
 /* filtro de preco */
-.filters{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;justify-content:center;margin:26px 0 0}
+.filters{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;justify-content:center;margin:20px 0 0}
 .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .chip{background:rgba(255,255,255,.08);color:var(--cream);border:1px solid var(--line);padding:8px 14px;font-weight:500;font-size:.9rem}
 .chip:hover{background:rgba(255,255,255,.16)}
@@ -77,8 +87,8 @@ h2.list-title::after{content:"";display:block;width:36px;height:1px;background:v
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-top:22px}
 .card{background:var(--paper);color:var(--ink);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 10px 30px rgba(0,0,0,.22)}
 .card.done{opacity:.55}
-.img{aspect-ratio:4/3;background:#fff;display:flex;align-items:center;justify-content:center;font-size:2.4rem;border-bottom:1px solid #f0e8da}
-.img img{width:100%;height:100%;object-fit:contain}
+.img{position:relative;aspect-ratio:4/5;overflow:hidden;background:#fff;display:flex;align-items:center;justify-content:center;font-size:2.4rem;border-bottom:1px solid #f0e8da}
+.img img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
 .body{padding:14px 14px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
 .title{font-family:var(--serif);font-weight:600;font-size:1.08rem;line-height:1.25}
 .price{color:var(--green);font-weight:600}
@@ -88,8 +98,9 @@ h2.list-title::after{content:"";display:block;width:36px;height:1px;background:v
 .actions{margin-top:auto;display:flex;flex-direction:column;gap:8px;padding-top:8px}
 .actions a{color:var(--green);font-weight:600;font-size:.9rem;text-decoration:none}
 .actions a:hover{text-decoration:underline}
+.actions .row{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap}
 .reserved{color:var(--green);font-weight:600;font-size:.95rem}
-.reserved .ghost{color:var(--muted);font-weight:400;font-size:.85rem}
+.card .ghost{color:var(--muted);font-size:.82rem}
 
 /* janela de confirmacao */
 .modal{position:fixed;inset:0;z-index:100;background:rgba(6,20,15,.6);display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px)}
@@ -100,6 +111,16 @@ h2.list-title::after{content:"";display:block;width:36px;height:1px;background:v
 .m-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
 .m-actions .no{background:#f1e9db;color:var(--ink)}
 .m-actions .no:hover{background:#e8dec9}
+.m-actions .no[hidden]{display:none}
+
+/* aviso */
+.toast{position:fixed;left:50%;bottom:76px;transform:translateX(-50%);z-index:90;max-width:min(420px,calc(100vw - 32px));background:var(--cream);color:var(--ink);border-radius:14px;padding:12px 16px;box-shadow:0 12px 40px rgba(0,0,0,.4);font-size:.92rem;text-align:center}
+.toast[hidden]{display:none}
+
+/* musica */
+.music{position:fixed;right:16px;bottom:16px;z-index:60;background:rgba(14,42,33,.85);color:var(--cream);border:1px solid rgba(217,183,121,.5);padding:10px 16px;font-weight:500;font-size:.9rem;backdrop-filter:blur(4px)}
+.music:hover{background:rgba(20,58,45,.95)}
+.music.on{background:var(--gold);color:#2b2316;border-color:var(--gold)}
 
 @media (prefers-reduced-motion: reduce){ button{transition:none} }
 </style>
@@ -112,8 +133,12 @@ h2.list-title::after{content:"";display:block;width:36px;height:1px;background:v
   <h1>Natal</h1>
   <p>Miguel &amp; Natália</p>
   <div class="rule"></div>
+  <div class="count" id="count"></div>
 </header>
 <main id="app"></main>
+
+<button class="music" id="music" type="button" aria-pressed="false" title="Ligar ou desligar a música de Natal">🎵 Música</button>
+<div class="toast" id="toast" hidden></div>
 
 <div id="modal" class="modal" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mTitle">
@@ -142,12 +167,26 @@ if (new URLSearchParams(location.search).has('reset')) { store.del(); history.re
 
 let viewer = store.get();
 let state = null;
+let tab = 'cartas';    // 'cartas' | 'mine'
 let filt = 'all';      // filtro de preco
 let sortBy = 'none';   // ordenacao
 const seed = Math.random();
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const safeUrl = u => { try { const x = new URL(u); return /^https?:$/.test(x.protocol) ? x.href : ''; } catch { return ''; } };
+const safeUrl = u => { if (!u) return ''; try { const x = new URL(u, location.href); return /^https?:$/.test(x.protocol) ? x.href : ''; } catch { return ''; } };
+const $ = id => document.getElementById(id);
+
+/* ---------- contagem decrescente ---------- */
+function countdownText() {
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const days = Math.round((new Date(now.getFullYear(), 11, 25) - today) / 86400000);
+  if (days > 1) return `🎄 Faltam ${days} dias para o Natal`;
+  if (days === 1) return '🎄 Amanhã é Natal!';
+  if (days === 0) return '🎄 Hoje é Natal! Feliz Natal!';
+  return '🎄 Feliz Natal!';
+}
+$('count').textContent = countdownText();
 
 /* ---------- mensagens de boas-vindas ---------- */
 const WELCOME = {
@@ -216,14 +255,15 @@ function applyFilters(items) {
   return out.map(x => x.i);
 }
 
-/* ---------- janela de confirmacao ---------- */
-function ask(title, text, okLabel = 'Confirmar') {
+/* ---------- janela de confirmacao / aviso ---------- */
+function ask(title, text, okLabel = 'Confirmar', showCancel = true) {
   return new Promise(resolve => {
-    const m = document.getElementById('modal'), yes = document.getElementById('mYes'), no = document.getElementById('mNo');
-    document.getElementById('mTitle').textContent = title;
-    document.getElementById('mText').textContent = text || '';
+    const m = $('modal'), yes = $('mYes'), no = $('mNo');
+    $('mTitle').textContent = title;
+    $('mText').textContent = text || '';
     yes.textContent = okLabel;
-    m.hidden = false; no.focus();
+    no.hidden = !showCancel;
+    m.hidden = false; (showCancel ? no : yes).focus();
     const done = v => {
       m.hidden = true;
       yes.onclick = no.onclick = m.onclick = null; document.removeEventListener('keydown', key);
@@ -235,6 +275,13 @@ function ask(title, text, okLabel = 'Confirmar') {
     m.onclick = e => { if (e.target === m) done(false); };
     document.addEventListener('keydown', key);
   });
+}
+const tell = (title, text) => ask(title, text, 'Ok', false);
+
+let toastTimer;
+function toast(msg) {
+  const t = $('toast'); t.textContent = msg; t.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 7000);
 }
 
 async function rpc(fn, args) {
@@ -249,7 +296,7 @@ async function rpc(fn, args) {
 
 const offline = () => {
   app.innerHTML = `<div class="box"><p>Sem ligação.</p><button id="retry">Tentar outra vez</button></div>`;
-  document.getElementById('retry').onclick = () => (viewer ? load() : renderPicker());
+  $('retry').onclick = () => (viewer ? load() : renderPicker());
 };
 
 async function renderPicker() {
@@ -264,12 +311,26 @@ async function renderPicker() {
     </div>`;
 }
 
-async function load() {
+/* avisa quando outra pessoa reservou, entretanto, uma prenda que estava livre */
+function notifyTaken(prev, next) {
+  for (const it of next.items) {
+    const p = prev.items.find(x => x.id === it.id);
+    if (p && !p.reserved && it.reserved && !it.mine && !it.own) {
+      toast(`«${it.title}» acabou de ser reservada por outra pessoa.`);
+      return;
+    }
+  }
+}
+
+async function load(silent = false) {
   try {
-    state = await rpc('get_lists', { p_viewer: viewer });
-    render();
+    const next = await rpc('get_lists', { p_viewer: viewer });
+    const prev = state;
+    state = next;
+    if (prev) notifyTaken(prev, next);
+    if (!silent || !prev || JSON.stringify(prev) !== JSON.stringify(next)) render();
   } catch (e) {
-    if (e.status === 400 || e.status === 401 || e.status === 403) { store.del(); viewer = ''; renderPicker(); }
+    if (e.status === 400 || e.status === 401 || e.status === 403) { store.del(); viewer = ''; state = null; renderPicker(); }
     else if (!state) offline();
   }
 }
@@ -277,20 +338,33 @@ async function load() {
 function card(it) {
   const link = safeUrl(it.url);
   const img = safeUrl(it.image_url);
-  let action = '';
-  if (!it.own) {
-    action = it.reserved
-      ? `<div class="reserved">Reservado ✓ <button class="ghost" data-undo="${it.id}">desfazer</button></div>`
-      : `<button data-reserve="${it.id}">Vou comprar este</button>`;
+  const q = it.quantity || 1;
+  let status = '', action = '';
+  if (it.own) {
+    if (q > 1) status = `<div class="small">Quantidade: ${q}</div>`;
+  } else if (it.mine) {
+    const bought = it.mine_status === 'bought';
+    status = `<div class="reserved">${bought ? 'Comprado por ti ✓' : 'Reservado por ti ✓'}</div>`
+      + (q > 1 ? `<div class="small">${it.taken} de ${q} reservadas</div>` : '');
+    action = `<div class="row">
+        <button class="soft" data-bought="${it.id}" data-to="${bought ? '0' : '1'}">${bought ? 'Ainda não comprei' : 'Já comprei'}</button>
+        <button class="ghost" data-undo="${it.id}">desfazer reserva</button></div>`;
+  } else if (it.reserved) {
+    status = `<div class="reserved">${q > 1 ? 'Todas reservadas ✓' : 'Reservado ✓'}</div>`;
+  } else {
+    if (q > 1) status = `<div class="small">${it.taken} de ${q} já reservadas</div>`;
+    action = `<button data-reserve="${it.id}">${q > 1 ? 'Reservar uma' : 'Vou comprar este'}</button>`;
   }
+  const done = !it.own && !it.mine && it.reserved;
   return `
-    <div class="card ${it.reserved && !it.own ? 'done' : ''}">
+    <div class="card ${done ? 'done' : ''}">
       <div class="img">${img ? `<img src="${esc(img)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : '🎁'}</div>
       <div class="body">
         ${it.priority >= 2 ? '<span class="badge">✦ Sonho</span>' : it.priority === 1 ? '<span class="badge">Gostava muito</span>' : ''}
         <div class="title">${esc(it.title)}</div>
         ${it.price ? `<div class="price">${esc(it.price)}</div>` : ''}
         ${it.note ? `<div class="small">${esc(it.note)}</div>` : ''}
+        ${status}
         <div class="actions">
           ${link ? `<a href="${esc(link)}" target="_blank" rel="noopener noreferrer">Ver na loja ↗</a>` : ''}
           ${action}
@@ -301,10 +375,24 @@ function card(it) {
 
 function render() {
   const me = state.viewer; // 'miguel' | 'natalia' | null
-  const order = ['natalia', 'miguel'].sort((a, b) => (a === me) - (b === me));
+  const mine = state.items.filter(i => i.mine);
   let html = `<div class="top"><span>Todas as reservas são anónimas</span>
     <span>${me ? '<a class="edit" href="/admin.html">✎ Editar a minha carta</a>' : ''}<button class="ghost" id="refresh">atualizar</button></span></div>`;
   html += welcomeHtml();
+  html += `<div class="tabs">
+      <button class="tab ${tab === 'cartas' ? 'on' : ''}" data-tab="cartas">Cartas</button>
+      <button class="tab ${tab === 'mine' ? 'on' : ''}" data-tab="mine">As minhas reservas${mine.length ? `<span class="n">${mine.length}</span>` : ''}</button>
+    </div>`;
+
+  if (tab === 'mine') {
+    html += `<h2 class="list-title">As minhas reservas</h2>
+      <div class="note">Só tu vês esta lista. Carrega em «Já comprei» quando tiveres a prenda, para te organizares.</div>`;
+    html += mine.length
+      ? `<div class="grid">${mine.map(card).join('')}</div>`
+      : `<p class="empty">Ainda não reservaste nenhuma prenda.</p>`;
+    app.innerHTML = html; return;
+  }
+
   html += `<div class="filters">
       <div class="chips">${BUCKETS.map(b => `<button class="chip ${b.id === filt ? 'on' : ''}" data-filter="${b.id}">${b.label}</button>`).join('')}</div>
       <label class="sort">Ordenar
@@ -315,6 +403,7 @@ function render() {
         </select>
       </label>
     </div>`;
+  const order = ['natalia', 'miguel'].sort((a, b) => (a === me) - (b === me));
   for (const owner of order) {
     const all = state.items.filter(i => i.owner === owner);
     const items = applyFilters(all);
@@ -327,36 +416,110 @@ function render() {
   app.innerHTML = html;
 }
 
+const titleOf = id => { const it = state.items.find(i => i.id === id); return it ? `«${it.title}»` : 'esta prenda'; };
+
 app.addEventListener('click', async e => {
   const t = e.target.closest('button');
   if (!t) return;
   if (t.dataset.pick) { viewer = t.dataset.pick; store.set(viewer); return load(); }
   if (t.id === 'refresh') return load();
   if (t.dataset.filter) { filt = t.dataset.filter; return render(); }
-  const rid = t.dataset.reserve, uid = t.dataset.undo;
-  if (!rid && !uid) return;
-  const it = state.items.find(i => i.id === (rid || uid));
-  const name = it ? `«${it.title}»` : 'esta prenda';
+  if (t.dataset.tab) { tab = t.dataset.tab; return render(); }
+
+  const rid = t.dataset.reserve, uid = t.dataset.undo, bid = t.dataset.bought;
+  if (!rid && !uid && !bid) return;
+  const id = rid || uid || bid, name = titleOf(id);
+
+  if (bid) {
+    const to = t.dataset.to === '1';
+    const ok = to
+      ? await ask('Já compraste?', `${name} fica marcada como comprada.`, 'Sim, já comprei')
+      : await ask('Ainda não compraste?', `${name} volta a ficar só reservada.`, 'Voltar a reservada');
+    if (!ok) return;
+    t.disabled = true;
+    try { await rpc('mark_bought', { p_viewer: viewer, p_item_id: id, p_bought: to }); }
+    catch { await tell('Não foi possível guardar', 'Tenta outra vez daqui a pouco.'); }
+    return load();
+  }
+
   const ok = rid
     ? await ask('Reservar esta prenda?', `${name} fica marcada como reservada, sem mostrar o teu nome, para ninguém comprar o mesmo.`, 'Reservar')
     : await ask('Desfazer a reserva?', `${name} volta a ficar livre para qualquer pessoa reservar.`, 'Desfazer reserva');
   if (!ok) return;
   t.disabled = true;
   try {
-    const done = await rpc('reserve_item', { p_viewer: viewer, p_item_id: rid || uid, p_reserve: !!rid });
-    if (rid && !done) alert('Alguém acabou de reservar esta prenda.');
-  } catch { alert('Não foi possível guardar. Tenta outra vez.'); }
-  await load();
+    const res = await rpc('reserve_item', { p_viewer: viewer, p_item_id: id, p_reserve: !!rid });
+    if (rid && !res.ok) {
+      await load();
+      return tell('Já não está livre', `Entretanto outra pessoa reservou ${name}. Escolhe outra prenda. 🎁`);
+    }
+  } catch { await tell('Não foi possível guardar', 'Tenta outra vez daqui a pouco.'); }
+  load();
 });
 app.addEventListener('change', e => { if (e.target.id === 'sort') { sortBy = e.target.value; render(); } });
 
-document.addEventListener('visibilitychange', () => { if (!document.hidden && viewer && state) load(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && viewer && state) load(true); });
+// atualiza sozinho, para ninguem reservar o que outra pessoa acabou de reservar
+setInterval(() => { if (!document.hidden && viewer && state && $('modal').hidden) load(true); }, 30000);
 
 if (viewer) load(); else renderPicker();
 
+/* ---------- musica de Natal (opcional, comeca desligada) ---------- */
+const music = (() => {
+  // "Jingle Bells" (inicio do refrao) e "We Wish You a Merry Christmas": melodias tradicionais, sintetizadas aqui
+  const F = { C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, Fs4: 369.99, G4: 392.0, A4: 440.0, B4: 493.88, C5: 523.25 };
+  const TUNE = [
+    ['E4',1],['E4',1],['E4',2],['E4',1],['E4',1],['E4',2],['E4',1],['G4',1],['C4',1.5],['D4',.5],['E4',4],[null,1],
+    ['D4',1],
+    ['G4',1],['G4',.5],['A4',.5],['G4',.5],['Fs4',.5],['E4',1],['E4',1],['E4',1],
+    ['A4',1],['A4',.5],['B4',.5],['A4',.5],['G4',.5],['Fs4',1],['D4',1],['D4',1],
+    ['B4',1],['B4',.5],['C5',.5],['B4',.5],['A4',.5],['G4',1],['E4',1],['D4',.5],['D4',.5],
+    ['E4',1],['A4',1],['Fs4',1],['G4',3],[null,2]
+  ];
+  const BEAT = 0.5;
+  let ctx = null, master = null, timer = null, on = false;
+
+  function note(freq, t, dur) {
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.28, t + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + Math.max(dur * 1.5, 0.5));
+    g.connect(master);
+    [['triangle', 1, 1], ['sine', 2, 0.35], ['sine', 3, 0.12]].forEach(([type, mul, vol]) => {
+      const o = ctx.createOscillator(), og = ctx.createGain();
+      o.type = type; o.frequency.value = freq * mul; og.gain.value = vol;
+      o.connect(og); og.connect(g); o.start(t); o.stop(t + Math.max(dur * 1.5, 0.5) + 0.05);
+    });
+  }
+  function loop() {
+    let t = ctx.currentTime + 0.15;
+    for (const [n, b] of TUNE) { if (n) note(F[n], t, b * BEAT); t += b * BEAT; }
+    timer = setTimeout(loop, Math.max((t - ctx.currentTime) * 1000, 500));
+  }
+  function setUi() { const b = $('music'); b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); b.textContent = on ? '⏸ Música' : '🎵 Música'; }
+  function toggle() {
+    if (!on) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      ctx = new AC(); master = ctx.createGain(); master.gain.value = 0.35; master.connect(ctx.destination);
+      ctx.resume(); on = true; loop();
+    } else {
+      on = false; clearTimeout(timer);
+      const c = ctx; master.gain.setTargetAtTime(0, c.currentTime, 0.05); setTimeout(() => c.close(), 400); ctx = null;
+    }
+    setUi();
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (!ctx) return;
+    if (document.hidden) ctx.suspend(); else ctx.resume();
+  });
+  $('music').onclick = toggle;
+  return { toggle };
+})();
+
 /* ---------- neve ---------- */
 (function snow() {
-  const canvas = document.getElementById('snow');
+  const canvas = $('snow');
   const ctx = canvas.getContext('2d');
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let w = 0, h = 0, dpr = 1, flakes = [], sprites = [], last = 0, raf = 0;
