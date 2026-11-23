@@ -352,6 +352,7 @@ async function renderPicker() {
       <h2>Bem-vindo à nossa carta de Natal! 🎄</h2>
       <p class="small">Entra, serve-te de uma rabanada e diz-nos quem és, para o Pai Natal não se baralhar com as listas. 🎅 Só perguntamos esta vez: fica guardado neste aparelho.</p>
       <div class="who">${list.map(v => `<button class="choice" data-pick="${esc(v.id)}">${esc(v.label)}</button>`).join('')}</div>
+      <p class="small" style="margin:16px 0 0;font-size:.78rem">Nota: o Miguel e a Natália aparecem em separado para cada um não ver as reservas da sua própria carta e manter a surpresa. 🤫</p>
     </div>`;
 }
 
