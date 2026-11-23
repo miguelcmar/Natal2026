@@ -349,8 +349,8 @@ async function renderPicker() {
   try { list = await rpc('get_viewers'); } catch { return offline(); }
   app.innerHTML = `
     <div class="box">
-      <h2>Quem és tu?</h2>
-      <p class="small">Escolhe o teu nome. Só perguntamos esta vez: fica guardado neste aparelho.</p>
+      <h2>Bem-vindo à nossa carta de Natal! 🎄</h2>
+      <p class="small">Entra, serve-te de uma rabanada e diz-nos quem és, para o Pai Natal não se baralhar com as listas. 🎅 Só perguntamos esta vez: fica guardado neste aparelho.</p>
       <div class="who">${list.map(v => `<button class="choice" data-pick="${esc(v.id)}">${esc(v.label)}</button>`).join('')}</div>
     </div>`;
 }
